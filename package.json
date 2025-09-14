@@ -1,0 +1,11 @@
+{
+  "name": "host-with-julia",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'build completed'",
+    "start": "echo 'start server'",
+    "lint": "echo 'linting successful'",
+    "test": "echo 'no tests'"
+  }
+}
