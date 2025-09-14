@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Button from '@/components/Button';
+import { useState } from 'react';
 
 const navItems = [
   { href: '#how', label: 'How' },
@@ -12,6 +15,41 @@ const navItems = [
 ];
 
 export default function Home() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormStatus({ type: null, message: '' });
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setFormStatus({ type: 'success', message: result.message });
+        (e.target as HTMLFormElement).reset();
+      } else {
+        setFormStatus({ type: 'error', message: result.error || 'Something went wrong' });
+      }
+    } catch {
+      setFormStatus({ type: 'error', message: 'Network error. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       <header className="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur border-b border-sand">
@@ -26,10 +64,32 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          <button className="md:hidden text-forest" aria-label="Menu">
-            ☰
+          <button 
+            className="md:hidden text-forest" 
+            aria-label="Menu"
+            onClick={toggleMobileMenu}
+          >
+            {isMobileMenuOpen ? '✕' : '☰'}
           </button>
         </nav>
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-cream border-t border-sand">
+            <ul className="flex flex-col p-4 space-y-4">
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <a 
+                    href={item.href} 
+                    className="text-charcoal hover:text-lake block py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </header>
 
       <main id="main" className="pt-16">
@@ -166,28 +226,52 @@ export default function Home() {
               Properties
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-              <div className="bg-white p-4 rounded shadow">
+              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
                 <h3 className="font-semibold">Echo House (Ashford)</h3>
-                <a href="#" className="text-lake hover:underline">
-                  View on Airbnb
+                <p className="text-sm text-slate mb-2">Mt. Rainier gateway cabin</p>
+                <a 
+                  href="https://airbnb.com/rooms/your-echo-house-listing" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-lake hover:underline inline-flex items-center gap-1"
+                >
+                  View on Airbnb ↗
                 </a>
               </div>
-              <div className="bg-white p-4 rounded shadow">
-                <h3 className="font-semibold">Edmonds</h3>
-                <a href="#" className="text-lake hover:underline">
-                  View on Airbnb
+              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
+                <h3 className="font-semibold">Edmonds Coastal</h3>
+                <p className="text-sm text-slate mb-2">Urban coastal retreat</p>
+                <a 
+                  href="https://airbnb.com/rooms/your-edmonds-listing" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-lake hover:underline inline-flex items-center gap-1"
+                >
+                  View on Airbnb ↗
                 </a>
               </div>
-              <div className="bg-white p-4 rounded shadow">
+              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
                 <h3 className="font-semibold">Chelan 1BR</h3>
-                <a href="#" className="text-lake hover:underline">
-                  View on Airbnb
+                <p className="text-sm text-slate mb-2">Lake country escape</p>
+                <a 
+                  href="https://airbnb.com/rooms/your-chelan-1br-listing" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-lake hover:underline inline-flex items-center gap-1"
+                >
+                  View on Airbnb ↗
                 </a>
               </div>
-              <div className="bg-white p-4 rounded shadow">
+              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
                 <h3 className="font-semibold">Chelan 2BR</h3>
-                <a href="#" className="text-lake hover:underline">
-                  View on Airbnb
+                <p className="text-sm text-slate mb-2">Family lake retreat</p>
+                <a 
+                  href="https://airbnb.com/rooms/your-chelan-2br-listing" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-lake hover:underline inline-flex items-center gap-1"
+                >
+                  View on Airbnb ↗
                 </a>
               </div>
             </div>
@@ -312,41 +396,52 @@ export default function Home() {
         <section id="contact" className="py-20">
           <div className="max-w-4xl mx-auto px-4 grid gap-8 md:grid-cols-2">
             <div className="space-y-4">
-              <h2 className="text-3xl font-bold text-forest">Let's Talk</h2>
+              <h2 className="text-3xl font-bold text-forest">Let&apos;s Talk</h2>
               <p className="text-slate">
-                Tell me about your property and I'll reach out.
+                Tell me about your property and I&apos;ll reach out.
               </p>
               <div className="text-moss">🕒 Avg Airbnb response: under 1 hour.</div>
             </div>
-            <form action="/api/contact" method="post" className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {formStatus.type && (
+                <div className={`p-3 rounded ${
+                  formStatus.type === 'success' 
+                    ? 'bg-green-100 text-green-800 border border-green-300' 
+                    : 'bg-red-100 text-red-800 border border-red-300'
+                }`}>
+                  {formStatus.message}
+                </div>
+              )}
               <input
                 required
                 name="name"
                 placeholder="Name"
-                className="w-full border p-2 rounded"
+                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
               />
               <input
                 required
                 type="email"
                 name="email"
                 placeholder="Email"
-                className="w-full border p-2 rounded"
+                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
               />
               <input
                 name="city"
                 placeholder="Property City/Area"
-                className="w-full border p-2 rounded"
+                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
               />
               <textarea
                 name="message"
                 placeholder="Message"
-                className="w-full border p-2 rounded"
+                rows={4}
+                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
               />
               <button
                 type="submit"
-                className="bg-forest text-white px-4 py-2 rounded-2xl hover:bg-lake transition shadow transform hover:scale-105"
+                disabled={isSubmitting}
+                className="bg-forest text-white px-6 py-3 rounded-2xl hover:bg-lake transition shadow transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Send
+                {isSubmitting ? 'Sending...' : 'Send'}
               </button>
             </form>
           </div>
@@ -372,7 +467,7 @@ export default function Home() {
           <p className="text-moss text-sm">
             Proudly serving Edmonds, Chelan, Ashford, and Brennan — expanding across Western Washington.
           </p>
-          <a href="#" className="hover:text-moss">Instagram</a>
+          <a href="https://instagram.com/hostwithjulia" target="_blank" rel="noopener noreferrer" className="hover:text-moss">Instagram</a>
         </div>
       </footer>
     </>
