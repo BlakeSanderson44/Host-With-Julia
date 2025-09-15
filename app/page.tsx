@@ -286,7 +286,7 @@ export default function Home() {
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
-                    ⭐ 4.99
+                    ⭐ 4.98
                   </div>
                   <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
                     $195/night
@@ -294,7 +294,7 @@ export default function Home() {
                 </div>
                 <div className="p-6">
                   <h3 className="font-bold text-lg text-charcoal mb-2">Echo House</h3>
-                  <p className="text-sm text-slate mb-3">Mt. Rainier gateway cabin • 2BR • Sleeps 6</p>
+                  <p className="text-sm text-slate mb-3">Mt. Rainier gateway cabin • 2BR • Sleeps 4</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-light">Ashford, WA</span>
                     <a 
