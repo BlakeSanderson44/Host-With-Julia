@@ -93,32 +93,82 @@ export default function Home() {
       </header>
 
       <main id="main" className="pt-16">
-        <section className="relative h-[80vh] flex items-center justify-center text-center text-white">
-          <Image
-            src="https://images.unsplash.com/photo-1501889088093-90b27410a9d8?auto=format&fit=crop&w=1600&q=80"
-            alt="Pacific Northwest landscape"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-forest/70 to-transparent" />
-          <div className="relative z-10 max-w-xl mx-auto p-4">
-            <h1 className="text-4xl md:text-5xl font-bold">
-              Boutique Airbnb Management That Feels Hands-Off (and Pays Off)
+        <section className="relative min-h-screen flex items-center justify-center text-center text-white overflow-hidden">
+          {/* Background Image with Parallax Effect */}
+          <div className="absolute inset-0">
+            <Image
+              src="https://images.unsplash.com/photo-1506905925346-14b4e5b4e4c3?auto=format&fit=crop&w=1920&q=80"
+              alt="Pacific Northwest mountain landscape"
+              fill
+              className="object-cover scale-105"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-forest-dark/80 via-forest/60 to-lake-dark/70" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+          </div>
+          
+          {/* Floating Elements */}
+          <div className="absolute top-20 left-10 w-20 h-20 bg-accent/20 rounded-full blur-xl animate-pulse" />
+          <div className="absolute bottom-32 right-16 w-32 h-32 bg-lake/20 rounded-full blur-2xl animate-pulse delay-1000" />
+          <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-moss/30 rounded-full blur-lg animate-pulse delay-500" />
+          
+          <div className="relative z-10 max-w-4xl mx-auto p-6">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-8">
+              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+              <span className="text-sm font-medium">Superhost • Under 1hr Response</span>
+            </div>
+            
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
+              <span className="block bg-gradient-to-r from-white via-cream to-accent-light bg-clip-text text-transparent">
+                Boutique
+              </span>
+              <span className="block bg-gradient-to-r from-accent-light via-white to-lake-light bg-clip-text text-transparent">
+                Airbnb Management
+              </span>
             </h1>
-            <p className="mt-4 text-lg">Serving Western WA</p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-              <Button href="#contact" variant="primary">
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl text-slate-light mb-4 max-w-2xl mx-auto leading-relaxed">
+              That feels <span className="text-accent font-semibold">hands-off</span> and pays off
+            </p>
+            <p className="text-lg text-slate-light/80 mb-12">Serving Western Washington</p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Button href="#contact" variant="primary" className="text-lg px-8 py-4 shadow-glow hover:shadow-glow transform hover:scale-105 transition-all duration-300">
                 Get a Free Property Review
               </Button>
-              <Button href="#how" variant="secondary">
+              <Button href="#how" variant="secondary" className="text-lg px-8 py-4 border-2 border-white/30 hover:border-white/50 hover:bg-white/10 transition-all duration-300">
                 See How It Works
               </Button>
             </div>
-            <div className="mt-8 flex flex-wrap gap-4 justify-center text-sm">
-              <span>⭐ Superhost</span>
-              <span>🕒 Avg Airbnb response: under 1 hour</span>
-              <span>📍 Serving Western WA</span>
+            
+            {/* Trust Indicators */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-all duration-300">
+                <div className="text-2xl mb-2">⭐</div>
+                <div className="font-semibold text-sm">Superhost Status</div>
+                <div className="text-xs text-slate-light">Consistently maintained</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-all duration-300">
+                <div className="text-2xl mb-2">⚡</div>
+                <div className="font-semibold text-sm">Under 1 Hour</div>
+                <div className="text-xs text-slate-light">Average response time</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-all duration-300">
+                <div className="text-2xl mb-2">📍</div>
+                <div className="font-semibold text-sm">Western WA</div>
+                <div className="text-xs text-slate-light">Local expertise</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+              <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-pulse" />
             </div>
           </div>
         </section>
@@ -225,54 +275,141 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-forest text-center mb-10">
               Properties
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
-                <h3 className="font-semibold">Echo House (Ashford)</h3>
-                <p className="text-sm text-slate mb-2">Mt. Rainier gateway cabin</p>
-                <a 
-                  href="https://airbnb.com/rooms/your-echo-house-listing" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-lake hover:underline inline-flex items-center gap-1"
-                >
-                  View on Airbnb ↗
-                </a>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {/* Echo House - Mt. Rainier */}
+              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                <div className="relative h-48 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80"
+                    alt="Echo House - Mt. Rainier cabin"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
+                    ⭐ 4.9
+                  </div>
+                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
+                    $180/night
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg text-charcoal mb-2">Echo House</h3>
+                  <p className="text-sm text-slate mb-3">Mt. Rainier gateway cabin • 2BR • Sleeps 6</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-light">Ashford, WA</span>
+                    <a 
+                      href="https://airbnb.com/rooms/echo-house-mt-rainier" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                    >
+                      View on Airbnb 
+                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
-                <h3 className="font-semibold">Edmonds Coastal</h3>
-                <p className="text-sm text-slate mb-2">Urban coastal retreat</p>
-                <a 
-                  href="https://airbnb.com/rooms/your-edmonds-listing" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-lake hover:underline inline-flex items-center gap-1"
-                >
-                  View on Airbnb ↗
-                </a>
+
+              {/* Edmonds Coastal */}
+              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                <div className="relative h-48 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+                    alt="Edmonds Coastal retreat"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
+                    ⭐ 4.8
+                  </div>
+                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
+                    $220/night
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg text-charcoal mb-2">Edmonds Coastal</h3>
+                  <p className="text-sm text-slate mb-3">Urban coastal retreat • 1BR • Sleeps 4</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-light">Edmonds, WA</span>
+                    <a 
+                      href="https://airbnb.com/rooms/edmonds-coastal-retreat" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                    >
+                      View on Airbnb 
+                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
-                <h3 className="font-semibold">Chelan 1BR</h3>
-                <p className="text-sm text-slate mb-2">Lake country escape</p>
-                <a 
-                  href="https://airbnb.com/rooms/your-chelan-1br-listing" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-lake hover:underline inline-flex items-center gap-1"
-                >
-                  View on Airbnb ↗
-                </a>
+
+              {/* Chelan Lake House 1BR */}
+              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                <div className="relative h-48 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"
+                    alt="Chelan Lake House 1BR"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
+                    ⭐ 4.9
+                  </div>
+                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
+                    $160/night
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg text-charcoal mb-2">Chelan Lake House</h3>
+                  <p className="text-sm text-slate mb-3">Lake country escape • 1BR • Sleeps 2</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-light">Chelan, WA</span>
+                    <a 
+                      href="https://airbnb.com/rooms/chelan-lake-house-1br" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                    >
+                      View on Airbnb 
+                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded shadow hover:shadow-lg transition">
-                <h3 className="font-semibold">Chelan 2BR</h3>
-                <p className="text-sm text-slate mb-2">Family lake retreat</p>
-                <a 
-                  href="https://airbnb.com/rooms/your-chelan-2br-listing" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-lake hover:underline inline-flex items-center gap-1"
-                >
-                  View on Airbnb ↗
-                </a>
+
+              {/* Chelan Family Retreat 2BR */}
+              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                <div className="relative h-48 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1520637836862-4d197d17c0a8?auto=format&fit=crop&w=800&q=80"
+                    alt="Chelan Family Retreat 2BR"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
+                    ⭐ 4.7
+                  </div>
+                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
+                    $240/night
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg text-charcoal mb-2">Chelan Family Retreat</h3>
+                  <p className="text-sm text-slate mb-3">Family lake retreat • 2BR • Sleeps 6</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-light">Chelan, WA</span>
+                    <a 
+                      href="https://airbnb.com/rooms/chelan-family-retreat-2br" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                    >
+                      View on Airbnb 
+                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
