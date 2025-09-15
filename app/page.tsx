@@ -37,8 +37,8 @@ const properties = [
   },
   {
     id: '3-bed-chelan',
-    name: '3 Bed Chelan Condo',
-    description: 'Lake country escape • 2BR • Sleeps 6',
+    name: '2 Bedroom, 3 Bed Chelan Condo',
+    description: 'Lake escape retreat • 2BR • 3 Beds • Sleeps 6',
     location: 'Chelan, WA',
     rating: 5.00,
     price: 175,
@@ -47,8 +47,8 @@ const properties = [
   },
   {
     id: '2-bed-chelan',
-    name: '2 Bed Chelan Condo',
-    description: 'Family lake retreat • 2BR • Sleeps 6',
+    name: '2 Bedroom, 2 Bed Chelan Condo',
+    description: 'Family lake getaway • 2BR • 2 Beds • Sleeps 6',
     location: 'Chelan, WA',
     rating: 4.91,
     price: 175,
@@ -57,8 +57,8 @@ const properties = [
   },
   {
     id: '1-bed-chelan',
-    name: '1 Bedroom Chelan Condo',
-    description: 'Cozy lake studio • 1BR • Sleeps 5',
+    name: '1 Bedroom + Den, 3 Bed Chelan Condo',
+    description: 'Cozy condo w/ den • 1BR + Den • 3 Beds • Sleeps 5',
     location: 'Chelan, WA',
     rating: 4.92,
     price: 150,
