@@ -298,7 +298,7 @@ export default function Home() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-light">Ashford, WA</span>
                     <a 
-                      href="https://airbnb.com/rooms/echo-house-mt-rainier" 
+                      href="https://www.airbnb.com/rooms/1385889129103005607" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
@@ -332,7 +332,7 @@ export default function Home() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-light">Edmonds, WA</span>
                     <a 
-                      href="https://airbnb.com/rooms/edmonds-coastal-retreat" 
+                      href="https://airbnb.com/rooms/plus/edmonds-waterfront-suite" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
@@ -366,7 +366,7 @@ export default function Home() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-light">Chelan, WA</span>
                     <a 
-                      href="https://airbnb.com/rooms/chelan-lake-house-1br" 
+                      href="https://airbnb.com/rooms/plus/chelan-lake-studio" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
@@ -400,7 +400,7 @@ export default function Home() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-light">Chelan, WA</span>
                     <a 
-                      href="https://airbnb.com/rooms/chelan-family-retreat-2br" 
+                      href="https://airbnb.com/rooms/plus/chelan-family-lakehouse" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
