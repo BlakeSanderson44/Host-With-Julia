@@ -280,7 +280,7 @@ export default function Home() {
               <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
                 <div className="relative h-48 overflow-hidden">
                   <Image
-                    src="https://a0.muscache.com/im/pictures/hosting/Hosting-1385889129103005607/original/4ba7830f-11c8-4919-904e-07e3c66adbec.jpeg?im_w=1200"
+                    src="/images/echo-house.avif"
                     alt="Echo House - Mt. Rainier cabin"
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
