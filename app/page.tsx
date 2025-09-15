@@ -14,6 +14,59 @@ const navItems = [
   { href: '#contact', label: 'Contact' },
 ];
 
+const properties = [
+  {
+    id: 'echo-house',
+    name: 'Echo House',
+    description: 'Mt. Rainier gateway cabin • 2BR • Sleeps 4',
+    location: 'Ashford, WA',
+    rating: 4.98,
+    price: 195,
+    image: '/images/echo-house.avif',
+    airbnbUrl: 'https://www.airbnb.com/rooms/1385889129103005607'
+  },
+  {
+    id: 'edmonds-retreat',
+    name: 'Edmonds Retreat',
+    description: 'Urban coastal retreat • 2BR • Sleeps 4',
+    location: 'Edmonds, WA',
+    rating: 5.00,
+    price: 175,
+    image: '/images/edmonds-retreat.avif',
+    airbnbUrl: 'https://www.airbnb.com/rooms/1393839318692128596'
+  },
+  {
+    id: '3-bed-chelan',
+    name: '3 Bed Chelan Condo',
+    description: 'Lake country escape • 2BR • Sleeps 6',
+    location: 'Chelan, WA',
+    rating: 5.00,
+    price: 175,
+    image: '/images/3-bed-chelan-condo.avif',
+    airbnbUrl: 'https://www.airbnb.com/rooms/1501613769254985414'
+  },
+  {
+    id: '2-bed-chelan',
+    name: '2 Bed Chelan Condo',
+    description: 'Family lake retreat • 2BR • Sleeps 6',
+    location: 'Chelan, WA',
+    rating: 4.91,
+    price: 175,
+    image: '/images/2-bed-chelan-condo.avif',
+    airbnbUrl: 'https://www.airbnb.com/rooms/1315478556100383819'
+  },
+  {
+    id: '1-bed-chelan',
+    name: '1 Bedroom Chelan Condo',
+    description: 'Cozy lake studio • 1BR • Sleeps 5',
+    location: 'Chelan, WA',
+    rating: 4.92,
+    price: 150,
+    image: '/images/1-bedroom-condo.avif',
+    airbnbUrl: 'https://www.airbnb.com/rooms/791580934465838010'
+  }
+];
+
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
@@ -275,142 +328,41 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-forest text-center mb-10">
               Properties
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {/* Echo House - Mt. Rainier */}
-              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src="/images/echo-house.avif"
-                    alt="Echo House - Mt. Rainier cabin"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
-                    ⭐ 4.98
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {properties.map((property) => (
+                <div key={property.id} className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={property.image}
+                      alt={`${property.name} - ${property.description}`}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
+                      ⭐ {property.rating.toFixed(2)}
+                    </div>
+                    <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
+                      ${property.price}/night
+                    </div>
                   </div>
-                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
-                    $195/night
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg text-charcoal mb-2">Echo House</h3>
-                  <p className="text-sm text-slate mb-3">Mt. Rainier gateway cabin • 2BR • Sleeps 4</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-light">Ashford, WA</span>
-                    <a 
-                      href="https://www.airbnb.com/rooms/1385889129103005607" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
-                    >
-                      View on Airbnb 
-                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Edmonds Coastal */}
-              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
-                    alt="Edmonds Coastal retreat"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
-                    ⭐ 4.8
-                  </div>
-                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
-                    $220/night
+                  <div className="p-6">
+                    <h3 className="font-bold text-lg text-charcoal mb-2">{property.name}</h3>
+                    <p className="text-sm text-slate mb-3">{property.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-light">{property.location}</span>
+                      <a 
+                        href={property.airbnbUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                      >
+                        View on Airbnb 
+                        <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg text-charcoal mb-2">Edmonds Coastal</h3>
-                  <p className="text-sm text-slate mb-3">Urban coastal retreat • 1BR • Sleeps 4</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-light">Edmonds, WA</span>
-                    <a 
-                      href="https://airbnb.com/rooms/plus/edmonds-waterfront-suite" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
-                    >
-                      View on Airbnb 
-                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chelan Lake House 1BR */}
-              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"
-                    alt="Chelan Lake House 1BR"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
-                    ⭐ 4.9
-                  </div>
-                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
-                    $160/night
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg text-charcoal mb-2">Chelan Lake House</h3>
-                  <p className="text-sm text-slate mb-3">Lake country escape • 1BR • Sleeps 2</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-light">Chelan, WA</span>
-                    <a 
-                      href="https://airbnb.com/rooms/plus/chelan-lake-studio" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
-                    >
-                      View on Airbnb 
-                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chelan Family Retreat 2BR */}
-              <div className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1520637836862-4d197d17c0a8?auto=format&fit=crop&w=800&q=80"
-                    alt="Chelan Family Retreat 2BR"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
-                    ⭐ 4.7
-                  </div>
-                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
-                    $240/night
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg text-charcoal mb-2">Chelan Family Retreat</h3>
-                  <p className="text-sm text-slate mb-3">Family lake retreat • 2BR • Sleeps 6</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-light">Chelan, WA</span>
-                    <a 
-                      href="https://airbnb.com/rooms/plus/chelan-family-lakehouse" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
-                    >
-                      View on Airbnb 
-                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
