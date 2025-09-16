@@ -127,9 +127,12 @@ const comparisonTable = [
 ];
 
 const testimonials = [
-  { quote: '“Julia keeps our rental booked and stress-free. Best decision we made.”' },
-  { quote: '“Professional, responsive, and worth every penny.”' },
-  { quote: '“Our cabin stays booked and stress-free.”' },
+  {
+    id: 'testimonial-1',
+    quote: '“Julia keeps our rental booked and stress-free. Best decision we made.”',
+  },
+  { id: 'testimonial-2', quote: '“Professional, responsive, and worth every penny.”' },
+  { id: 'testimonial-3', quote: '“Our cabin stays booked and stress-free.”' },
 ];
 
 export default function Home() {
