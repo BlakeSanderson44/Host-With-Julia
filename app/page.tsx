@@ -122,9 +122,11 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          <button 
-            className="md:hidden text-forest" 
+          <button
+            className="md:hidden text-forest"
             aria-label="Menu"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
             onClick={toggleMobileMenu}
           >
             {isMobileMenuOpen ? '✕' : '☰'}
@@ -132,11 +134,11 @@ export default function Home() {
         </nav>
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-cream border-t border-sand">
+          <div id="mobile-menu" className="md:hidden bg-cream border-t border-sand">
             <ul className="flex flex-col p-4 space-y-4">
               {navItems.map((item) => (
                 <li key={item.href}>
-                  <a 
+                  <a
                     href={item.href} 
                     className="text-charcoal hover:text-lake block py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
