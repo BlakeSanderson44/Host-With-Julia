@@ -556,30 +556,54 @@ export default function Home() {
                   {formStatus.message}
                 </div>
               )}
-              <input
-                required
-                name="name"
-                placeholder="Name"
-                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
-              />
-              <input
-                required
-                type="email"
-                name="email"
-                placeholder="Email"
-                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
-              />
-              <input
-                name="city"
-                placeholder="Property City/Area"
-                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
-              />
-              <textarea
-                name="message"
-                placeholder="Message"
-                rows={4}
-                className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
-              />
+              <div className="space-y-1">
+                <label htmlFor="contact-name" className="block text-sm font-medium text-forest">
+                  Name
+                </label>
+                <input
+                  id="contact-name"
+                  required
+                  name="name"
+                  placeholder="Name"
+                  className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="contact-email" className="block text-sm font-medium text-forest">
+                  Email
+                </label>
+                <input
+                  id="contact-email"
+                  required
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="contact-city" className="block text-sm font-medium text-forest">
+                  Property City or Area
+                </label>
+                <input
+                  id="contact-city"
+                  name="city"
+                  placeholder="Property City/Area"
+                  className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="contact-message" className="block text-sm font-medium text-forest">
+                  Message
+                </label>
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  placeholder="Message"
+                  rows={4}
+                  className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+                />
+              </div>
               <button
                 type="submit"
                 disabled={isSubmitting}
