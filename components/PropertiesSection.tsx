@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface PropertyItem {
   id: string;
@@ -20,6 +20,52 @@ interface PropertiesSectionProps {
 
 export default function PropertiesSection({ properties }: PropertiesSectionProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [scrollState, setScrollState] = useState({ scrollLeft: 0, maxScrollLeft: 0 });
+
+  const updateScrollState = useCallback(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) {
+      return;
+    }
+
+    const maxScrollLeft = Math.max(carousel.scrollWidth - carousel.clientWidth, 0);
+    const normalizedScrollLeft = Math.min(Math.max(carousel.scrollLeft, 0), maxScrollLeft);
+
+    setScrollState((prev) => {
+      if (prev.scrollLeft === normalizedScrollLeft && prev.maxScrollLeft === maxScrollLeft) {
+        return prev;
+      }
+
+      return {
+        scrollLeft: normalizedScrollLeft,
+        maxScrollLeft,
+      };
+    });
+  }, []);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) {
+      return;
+    }
+
+    updateScrollState();
+
+    carousel.addEventListener('scroll', updateScrollState);
+    window.addEventListener('resize', updateScrollState);
+
+    return () => {
+      carousel.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [updateScrollState]);
+
+  useEffect(() => {
+    updateScrollState();
+  }, [properties.length, updateScrollState]);
+
+  const isAtStart = scrollState.scrollLeft <= 1;
+  const isAtEnd = scrollState.maxScrollLeft - scrollState.scrollLeft <= 1;
 
   const scrollCarousel = (offset: number) => {
     carouselRef.current?.scrollBy({ left: offset, behavior: 'smooth' });
@@ -36,7 +82,8 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
           <button
             type="button"
             onClick={() => scrollCarousel(-400)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -ml-4 transition-all duration-300 hover:scale-110"
+            disabled={isAtStart}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -ml-4 transition-all duration-300 hover:scale-110 disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
             aria-label="Previous properties"
           >
             <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +93,8 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
           <button
             type="button"
             onClick={() => scrollCarousel(400)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -mr-4 transition-all duration-300 hover:scale-110"
+            disabled={isAtEnd}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -mr-4 transition-all duration-300 hover:scale-110 disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
             aria-label="Next properties"
           >
             <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
