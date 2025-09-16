@@ -53,6 +53,7 @@ export default function ContactSection() {
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {formStatus.type && (
             <div
+              role="alert"
               className={`p-3 rounded ${
                 formStatus.type === 'success'
                   ? 'bg-green-100 text-green-800 border border-green-300'
