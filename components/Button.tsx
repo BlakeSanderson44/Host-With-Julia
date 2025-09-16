@@ -1,8 +1,9 @@
+import { type ReactNode } from 'react';
 import Link from 'next/link';
 
 interface ButtonProps {
   href: string;
-  children: React.ReactNode;
+  children: ReactNode;
   variant?: 'primary' | 'secondary';
   className?: string;
 }
