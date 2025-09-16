@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 export interface PropertyItem {
   id: string;
@@ -21,9 +21,12 @@ interface PropertiesSectionProps {
 export default function PropertiesSection({ properties }: PropertiesSectionProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  const scrollCarousel = (offset: number) => {
-    carouselRef.current?.scrollBy({ left: offset, behavior: 'smooth' });
-  };
+  const scrollCarousel = useCallback(
+    (offset: number) => {
+      carouselRef.current?.scrollBy({ left: offset, behavior: 'smooth' });
+    },
+    [carouselRef],
+  );
 
   return (
     <section id="properties" className="bg-sand py-20">
