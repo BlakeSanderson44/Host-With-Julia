@@ -9,6 +9,7 @@ export default function HeroSection() {
           src="https://images.unsplash.com/photo-1506905925346-14b4e5b4e4c3?auto=format&fit=crop&w=1920&q=80"
           alt="Pacific Northwest mountain landscape"
           fill
+          sizes="100vw"
           className="object-cover scale-105"
           priority
         />
