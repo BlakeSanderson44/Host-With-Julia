@@ -3,7 +3,27 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const data = await request.formData();
-    const { name, email, city, message } = Object.fromEntries(data);
+    const nameEntry = data.get('name');
+    const emailEntry = data.get('email');
+    const cityEntry = data.get('city');
+    const messageEntry = data.get('message');
+
+    if (
+      (nameEntry !== null && typeof nameEntry !== 'string') ||
+      (emailEntry !== null && typeof emailEntry !== 'string') ||
+      (cityEntry !== null && typeof cityEntry !== 'string') ||
+      (messageEntry !== null && typeof messageEntry !== 'string')
+    ) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid form submission' },
+        { status: 400 }
+      );
+    }
+
+    const name = nameEntry?.toString();
+    const email = emailEntry?.toString();
+    const city = cityEntry?.toString();
+    const message = messageEntry?.toString();
 
     // Basic validation
     if (!name || !email) {
