@@ -1,13 +1,144 @@
-import AboutSection from '@/components/AboutSection';
-import ContactSection from '@/components/ContactSection';
+import dynamic from 'next/dynamic';
+
 import Header, { type NavItem } from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
 import LocationsSection from '@/components/LocationsSection';
-import PropertiesSection, { type PropertyItem } from '@/components/PropertiesSection';
 import ServicesSection from '@/components/ServicesSection';
 import SiteFooter from '@/components/SiteFooter';
-import TestimonialsSection from '@/components/TestimonialsSection';
+
+import type { PropertyItem } from '@/components/PropertiesSection';
+
+function SectionHeadingSkeleton({ align = 'center' }: { align?: 'left' | 'center' }) {
+  return (
+    <div className={align === 'center' ? 'flex justify-center' : 'flex'}>
+      <div className="h-8 w-40 rounded bg-forest/20" />
+    </div>
+  );
+}
+
+function SectionParagraphSkeleton({ lines = 2 }: { lines?: number }) {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: lines }).map((_, index) => (
+        <div key={index} className="h-4 w-full rounded bg-forest/10" />
+      ))}
+    </div>
+  );
+}
+
+function PropertiesSectionSkeleton() {
+  return (
+    <section id="properties" className="bg-sand py-20">
+      <div className="mx-auto max-w-7xl px-4 animate-pulse space-y-8">
+        <SectionHeadingSkeleton />
+        <div className="mx-auto w-3/4">
+          <SectionParagraphSkeleton />
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-72 rounded-2xl bg-white shadow-soft" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AboutSectionSkeleton() {
+  return (
+    <section id="about" className="py-20">
+      <div className="mx-auto max-w-6xl px-4 animate-pulse space-y-10">
+        <SectionHeadingSkeleton />
+        <div className="grid gap-6 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="space-y-3">
+              <div className="h-5 w-32 rounded bg-forest/20" />
+              <SectionParagraphSkeleton lines={3} />
+            </div>
+          ))}
+        </div>
+        <div className="space-y-4">
+          <SectionHeadingSkeleton />
+          <div className="space-y-3">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <div key={index} className="h-4 w-full rounded bg-forest/10" />
+            ))}
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-16 rounded bg-forest/10" />
+          ))}
+        </div>
+        <div className="overflow-hidden rounded-lg border border-sand">
+          <div className="h-10 bg-sand" />
+          <div className="space-y-3 p-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="h-4 w-full rounded bg-forest/10" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TestimonialsSectionSkeleton() {
+  return (
+    <section id="faqs" className="bg-sand py-20">
+      <div className="mx-auto max-w-6xl px-4 animate-pulse space-y-8">
+        <SectionHeadingSkeleton />
+        <div className="grid gap-6 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-32 rounded bg-white shadow" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactSectionSkeleton() {
+  return (
+    <section id="contact" className="py-20">
+      <div className="mx-auto grid max-w-4xl gap-8 px-4 md:grid-cols-2">
+        <div className="space-y-4 animate-pulse">
+          <SectionHeadingSkeleton align="left" />
+          <SectionParagraphSkeleton />
+          <div className="h-5 w-40 rounded bg-forest/20" />
+        </div>
+        <div className="space-y-4 animate-pulse">
+          {['h-10', 'h-10', 'h-10', 'h-24'].map((heightClass, index) => (
+            <div key={index} className="space-y-2">
+              <div className="h-4 w-24 rounded bg-forest/20" />
+              <div className={`w-full rounded border border-forest/30 bg-white ${heightClass}`} />
+            </div>
+          ))}
+          <div className="h-12 w-32 rounded bg-forest/60" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const PropertiesSection = dynamic(() => import('@/components/PropertiesSection'), {
+  loading: () => <PropertiesSectionSkeleton />,
+  ssr: false,
+});
+
+const AboutSection = dynamic(() => import('@/components/AboutSection'), {
+  loading: () => <AboutSectionSkeleton />,
+});
+
+const TestimonialsSection = dynamic(() => import('@/components/TestimonialsSection'), {
+  loading: () => <TestimonialsSectionSkeleton />,
+});
+
+const ContactSection = dynamic(() => import('@/components/ContactSection'), {
+  loading: () => <ContactSectionSkeleton />,
+  ssr: false,
+});
 
 const navItems: NavItem[] = [
   { href: '#how', label: 'How' },
