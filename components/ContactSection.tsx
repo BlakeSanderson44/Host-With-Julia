@@ -3,17 +3,37 @@
 import { FormEvent, useState } from 'react';
 
 type FormStatus = { type: 'success' | 'error' | null; message: string };
+type ContactField = 'name' | 'email' | 'city' | 'message';
+type FieldErrors = Partial<Record<ContactField, string[]>>;
 
 const initialStatus: FormStatus = { type: null, message: '' };
 
 export default function ContactSection() {
   const [formStatus, setFormStatus] = useState<FormStatus>(initialStatus);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getErrorMessages = (field: ContactField) => fieldErrors[field] ?? [];
+  const getDescribedBy = (field: ContactField) => {
+    const messages = getErrorMessages(field);
+    if (messages.length === 0) {
+      return undefined;
+    }
+    return messages
+      .map((_, index) => `contact-${field}-error-${index}`)
+      .join(' ');
+  };
+
+  const inputClasses = (hasError: boolean) =>
+    `w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent ${
+      hasError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
+    }`;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
     setFormStatus(initialStatus);
+    setFieldErrors({});
 
     try {
       const formData = new FormData(event.currentTarget);
@@ -22,18 +42,59 @@ export default function ContactSection() {
         body: formData,
       });
 
+      let result: unknown;
+
+      try {
+        result = await response.json();
+      } catch {
+        result = null;
+      }
+
+      const validationErrors =
+        result && typeof result === 'object' && 'errors' in result
+          ? (result.errors as FieldErrors)
+          : undefined;
+
       if (!response.ok) {
-        setFormStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
+        if (validationErrors) {
+          setFieldErrors(validationErrors);
+        }
+
+        const message =
+          result && typeof result === 'object' && 'message' in result && typeof result.message === 'string'
+            ? result.message
+            : 'Something went wrong. Please try again.';
+
+        setFormStatus({ type: 'error', message });
         return;
       }
 
-      const result = await response.json();
+      if (validationErrors) {
+        setFieldErrors(validationErrors);
+      }
 
-      if (result.success) {
-        setFormStatus({ type: 'success', message: result.message });
-        event.currentTarget.reset();
+      if (
+        result &&
+        typeof result === 'object' &&
+        'success' in result &&
+        typeof result.success === 'boolean'
+      ) {
+        if (result.success) {
+          const message =
+            'message' in result && typeof result.message === 'string'
+              ? result.message
+              : 'Thank you for your message!';
+          setFormStatus({ type: 'success', message });
+          event.currentTarget.reset();
+        } else {
+          const message =
+            'message' in result && typeof result.message === 'string'
+              ? result.message
+              : 'Something went wrong. Please try again.';
+          setFormStatus({ type: 'error', message });
+        }
       } else {
-        setFormStatus({ type: 'error', message: result.error || 'Something went wrong' });
+        setFormStatus({ type: 'error', message: 'Unexpected response. Please try again.' });
       }
     } catch {
       setFormStatus({ type: 'error', message: 'Network error. Please try again.' });
@@ -72,8 +133,19 @@ export default function ContactSection() {
               required
               name="name"
               placeholder="Name"
-              className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+              className={inputClasses(getErrorMessages('name').length > 0)}
+              aria-invalid={getErrorMessages('name').length > 0}
+              aria-describedby={getDescribedBy('name')}
             />
+            {getErrorMessages('name').map((error, index) => (
+              <p
+                key={`name-error-${index}`}
+                id={`contact-name-error-${index}`}
+                className="text-sm text-red-600"
+              >
+                {error}
+              </p>
+            ))}
           </div>
           <div className="space-y-1">
             <label htmlFor="contact-email" className="block text-sm font-medium text-forest">
@@ -85,8 +157,19 @@ export default function ContactSection() {
               type="email"
               name="email"
               placeholder="Email"
-              className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+              className={inputClasses(getErrorMessages('email').length > 0)}
+              aria-invalid={getErrorMessages('email').length > 0}
+              aria-describedby={getDescribedBy('email')}
             />
+            {getErrorMessages('email').map((error, index) => (
+              <p
+                key={`email-error-${index}`}
+                id={`contact-email-error-${index}`}
+                className="text-sm text-red-600"
+              >
+                {error}
+              </p>
+            ))}
           </div>
           <div className="space-y-1">
             <label htmlFor="contact-city" className="block text-sm font-medium text-forest">
@@ -96,8 +179,19 @@ export default function ContactSection() {
               id="contact-city"
               name="city"
               placeholder="Property City/Area"
-              className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+              className={inputClasses(getErrorMessages('city').length > 0)}
+              aria-invalid={getErrorMessages('city').length > 0}
+              aria-describedby={getDescribedBy('city')}
             />
+            {getErrorMessages('city').map((error, index) => (
+              <p
+                key={`city-error-${index}`}
+                id={`contact-city-error-${index}`}
+                className="text-sm text-red-600"
+              >
+                {error}
+              </p>
+            ))}
           </div>
           <div className="space-y-1">
             <label htmlFor="contact-message" className="block text-sm font-medium text-forest">
@@ -108,7 +202,28 @@ export default function ContactSection() {
               name="message"
               placeholder="Message"
               rows={4}
-              className="w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent"
+              className={inputClasses(getErrorMessages('message').length > 0)}
+              aria-invalid={getErrorMessages('message').length > 0}
+              aria-describedby={getDescribedBy('message')}
+            />
+            {getErrorMessages('message').map((error, index) => (
+              <p
+                key={`message-error-${index}`}
+                id={`contact-message-error-${index}`}
+                className="text-sm text-red-600"
+              >
+                {error}
+              </p>
+            ))}
+          </div>
+          <div className="hidden" aria-hidden="true">
+            <label htmlFor="contact-company">Company</label>
+            <input
+              id="contact-company"
+              type="text"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
             />
           </div>
           <button
