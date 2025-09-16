@@ -3,78 +3,100 @@ import Button from './Button';
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center text-center text-white overflow-hidden">
+    <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-forest text-white">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1506905925346-14b4e5b4e4c3?auto=format&fit=crop&w=1920&q=80"
-          alt="Pacific Northwest mountain landscape"
+          src="https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1920&q=80"
+          alt="Cozy Pacific Northwest cabin interior with warm lighting"
           fill
           sizes="100vw"
-          className="object-cover scale-105"
+          className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-forest-dark/80 via-forest/60 to-lake-dark/70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-forest/70 via-forest/40 to-transparent" />
       </div>
 
-      <div className="absolute top-20 left-10 w-20 h-20 bg-accent/20 rounded-full blur-xl animate-pulse" />
-      <div className="absolute bottom-32 right-16 w-32 h-32 bg-lake/20 rounded-full blur-2xl animate-pulse delay-1000" />
-      <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-moss/30 rounded-full blur-lg animate-pulse delay-500" />
-
-      <div className="relative z-10 max-w-4xl mx-auto p-6">
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-8">
-          <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-          <span className="text-sm font-medium">Superhost • Under 1hr Response</span>
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-24 text-center sm:px-10">
+        <div className="mb-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-2 text-sm font-medium backdrop-blur-sm">
+          <span className="flex items-center gap-1 whitespace-nowrap">
+            <span aria-hidden="true">⭐</span>
+            Superhost
+          </span>
+          <span aria-hidden="true" className="text-white/60">
+            •
+          </span>
+          <span className="flex items-center gap-1 whitespace-nowrap">
+            <span aria-hidden="true">🕒</span>
+            Avg response: &lt; 1 hour
+          </span>
+          <span aria-hidden="true" className="text-white/60">
+            •
+          </span>
+          <span className="flex items-center gap-1 whitespace-nowrap">
+            <span aria-hidden="true">📍</span>
+            Western WA
+          </span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
-          <span className="block bg-gradient-to-r from-white via-cream to-accent-light bg-clip-text text-transparent">
-            Boutique
-          </span>
-          <span className="block bg-gradient-to-r from-accent-light via-white to-lake-light bg-clip-text text-transparent">
-            Airbnb Management
-          </span>
+        <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-semibold leading-tight text-white drop-shadow-sm sm:text-5xl md:text-6xl lg:text-7xl">
+          Boutique Airbnb management rooted in warm Pacific Northwest hospitality.
         </h1>
 
-        <p className="text-xl md:text-2xl text-slate-light mb-4 max-w-2xl mx-auto leading-relaxed">
-          That feels <span className="text-accent font-semibold">hands-off</span> and pays off
+        <p className="mx-auto mb-4 max-w-3xl text-lg text-white/80 sm:text-xl">
+          Thoughtful guest care, local expertise, and steady returns for homeowners who want a partner they can trust.
         </p>
-        <p className="text-lg text-slate-light/80 mb-12">Serving Western Washington</p>
+        <p className="mx-auto mb-12 max-w-2xl text-base uppercase tracking-[0.2em] text-white/70">
+          Serving Western Washington
+        </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <Button href="#contact" variant="primary" className="text-lg px-8 py-4 shadow-glow hover:shadow-glow">
+        <div className="mb-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Button href="#contact" variant="primary" className="text-lg px-8 py-4 shadow-glow">
             Get a Free Property Review
           </Button>
           <Button
             href="#how"
             variant="secondary"
-            className="text-lg px-8 py-4 border-2 border-white/30 hover:border-white/50 hover:bg-white/10"
+            className="text-lg px-8 py-4 border-white/40 text-white/90 hover:text-white"
           >
             See How It Works
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-3">
           {[
-            { title: 'Superhost Status', description: 'Consistently maintained', icon: '⭐' },
-            { title: 'Under 1 Hour', description: 'Average response time', icon: '⚡' },
-            { title: 'Western WA', description: 'Local expertise', icon: '📍' },
+            {
+              icon: '🌲',
+              title: 'Local touch',
+              description: 'Neighborhood insights and welcome touches that feel authentically PNW.',
+            },
+            {
+              icon: '🤝',
+              title: 'Hands-on hosting',
+              description: 'Guest messaging, turnovers, and reporting handled with grace and care.',
+            },
+            {
+              icon: '📈',
+              title: 'Performance clarity',
+              description: 'Transparent pricing, monthly reports, and payouts you can plan around.',
+            },
           ].map((item) => (
             <div
               key={item.title}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-all duration-300"
+              className="rounded-2xl border border-white/15 bg-white/10 p-6 shadow-soft backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1 hover:bg-white/15"
             >
-              <div className="text-2xl mb-2">{item.icon}</div>
-              <div className="font-semibold text-sm">{item.title}</div>
-              <div className="text-xs text-slate-light">{item.description}</div>
+              <div className="mb-3 text-2xl" aria-hidden="true">
+                {item.icon}
+              </div>
+              <p className="mb-2 text-base font-semibold text-white">{item.title}</p>
+              <p className="text-sm text-white/80">{item.description}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-pulse" />
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="flex h-10 w-6 items-start justify-center rounded-full border-2 border-white/50">
+          <div className="mt-2 h-3 w-1 rounded-full bg-white/70" />
         </div>
       </div>
     </section>
