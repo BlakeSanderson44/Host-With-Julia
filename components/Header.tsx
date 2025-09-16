@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export interface NavItem {
   href: string;
@@ -14,13 +14,13 @@ interface HeaderProps {
 export default function Header({ navItems }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const toggleMobileMenu = () => {
+  const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen((previous) => !previous);
-  };
+  }, [setIsMobileMenuOpen]);
 
-  const handleNavigation = () => {
+  const handleNavigation = useCallback(() => {
     setIsMobileMenuOpen(false);
-  };
+  }, [setIsMobileMenuOpen]);
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur border-b border-sand">
