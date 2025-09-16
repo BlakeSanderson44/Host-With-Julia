@@ -88,6 +88,11 @@ export default function Home() {
         body: formData,
       });
 
+      if (!response.ok) {
+        setFormStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
+        return;
+      }
+
       const result = await response.json();
 
       if (result.success) {
