@@ -38,7 +38,7 @@ export default function Header({ navItems }: HeaderProps) {
           ))}
         </ul>
         <button
-          className="md:hidden text-forest"
+          className="md:hidden text-forest text-3xl leading-none p-2 rounded-md border border-forest/20 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-forest/40"
           aria-label="Menu"
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-menu"
