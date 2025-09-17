@@ -80,7 +80,8 @@ function validateSchema<T extends Record<string, unknown>>(
 
   (Object.keys(schema) as Array<keyof T>).forEach(key => {
     const definition = schema[key];
-    const { value, issues = [] } = definition.sanitize(data[key]);
+    const rawValue = data[key as string];
+    const { value, issues = [] } = definition.sanitize(rawValue);
     const validators = definition.validators ?? [];
     const errors: string[] = [...issues];
 
