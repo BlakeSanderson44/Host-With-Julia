@@ -36,7 +36,7 @@ export default function HeroSection() {
           </span>
           <span className="flex items-center gap-1 whitespace-nowrap">
             <span aria-hidden="true">📍</span>
-            Western WA
+            Washington
           </span>
         </div>
 
