@@ -6,8 +6,8 @@ export default function HeroSection() {
     <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-forest text-white">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1920&q=80"
-          alt="Cozy Pacific Northwest cabin interior with warm lighting"
+          src="/images/echo-house.avif"
+          alt="Echo House living room with warm natural wood and a stone fireplace"
           fill
           sizes="100vw"
           className="object-cover"
