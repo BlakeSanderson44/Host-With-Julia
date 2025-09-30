@@ -26,7 +26,7 @@ export default function Hero() {
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <BadgePill>⭐ Superhost</BadgePill>
           <BadgePill>⏱ Avg response &lt; 1 hr</BadgePill>
-          <BadgePill>📍 Western WA</BadgePill>
+          <BadgePill>📍 Washington</BadgePill>
         </div>
 
         <h1 className="max-w-3xl font-semibold leading-tight [font-size:clamp(2rem,5vw,4rem)]">
