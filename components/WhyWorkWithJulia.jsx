@@ -113,13 +113,13 @@ export default function WhyWorkWithJulia() {
             </caption>
             <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-600">
               <tr>
-                <th scope="col" className="px-4 py-3">
+                <th scope="col" className="px-4 py-3 sm:w-2/5">
                   What’s Included
                 </th>
-                <th scope="col" className="px-4 py-3 text-gray-900">
+                <th scope="col" className="px-4 py-3 text-gray-900 sm:w-1/3">
                   Owner-Managed
                 </th>
-                <th scope="col" className="px-4 py-3 text-gray-900">
+                <th scope="col" className="px-4 py-3 text-gray-900 sm:w-1/3">
                   With Julia
                 </th>
               </tr>
@@ -131,20 +131,16 @@ export default function WhyWorkWithJulia() {
                     {row.label}
                   </th>
                   <td className="px-4 py-4 text-gray-700">
-                    <span className="sr-only">
-                      Owner-managed {row.label}: {row.owner}
-                    </span>
                     <span className="inline-flex items-center gap-2">
                       <IconX />
-                      <span>{row.owner}</span>
+                      <span className="sr-only">Owner-managed {row.label}:</span>
+                      <span className="text-gray-700">{row.owner}</span>
                     </span>
                   </td>
                   <td className="px-4 py-4 text-gray-900">
-                    <span className="sr-only">
-                      With Julia {row.label}: {row.julia}
-                    </span>
                     <span className="inline-flex items-center gap-2">
                       <IconCheck />
+                      <span className="sr-only">With Julia {row.label}:</span>
                       <span>{row.julia}</span>
                     </span>
                   </td>
