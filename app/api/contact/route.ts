@@ -109,8 +109,75 @@ function validateSchema<T extends Record<string, unknown>>(
   return { success: true, data: result as T };
 }
 
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+
+type RateLimitEntry = { count: number; expiresAt: number };
+
+const submissionAttempts = new Map<string, RateLimitEntry>();
+
+function getClientIdentifier(request: Request) {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const [firstIp] = forwardedFor.split(',');
+    if (firstIp) {
+      return firstIp.trim();
+    }
+  }
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) {
+    return realIp.trim();
+  }
+
+  return 'unknown';
+}
+
+function isRateLimited(identifier: string) {
+  const now = Date.now();
+
+  submissionAttempts.forEach((entry, key) => {
+    if (entry.expiresAt <= now) {
+      submissionAttempts.delete(key);
+    }
+  });
+
+  const entry = submissionAttempts.get(identifier);
+
+  if (!entry || entry.expiresAt <= now) {
+    submissionAttempts.set(identifier, {
+      count: 1,
+      expiresAt: now + RATE_LIMIT_WINDOW_MS,
+    });
+    return false;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return true;
+  }
+
+  entry.count += 1;
+  submissionAttempts.set(identifier, entry);
+  return false;
+}
+
 export async function POST(request: Request) {
   try {
+    const clientIdentifier = getClientIdentifier(request);
+
+    if (isRateLimited(clientIdentifier)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Too many submissions. Please wait a minute and try again.',
+        },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(RATE_LIMIT_WINDOW_MS / 1000) },
+        }
+      );
+    }
+
     const data = await request.formData();
 
     const honeypotValue = data.get('company');
@@ -140,17 +207,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
-    const { name, email, city, message } = validationResult.data;
-
-    console.log('Contact form submission:', {
-      name,
-      email,
-      city: city ?? '',
-      message: message ?? '',
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 1000));
 
     return NextResponse.json({
       success: true,
