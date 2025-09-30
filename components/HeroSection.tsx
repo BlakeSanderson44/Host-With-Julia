@@ -48,7 +48,7 @@ export default function HeroSection() {
           Thoughtful guest care, local expertise, and steady returns for homeowners who want a partner they can trust.
         </p>
         <p className="mx-auto mb-12 max-w-2xl text-base uppercase tracking-[0.2em] text-white/70">
-          Serving Western Washington
+          Washington vs. Western Washington
         </p>
 
         <div className="mb-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
