@@ -53,7 +53,13 @@ function StatPill({ label }) {
 
 function IconCheck({ className = "h-4 w-4 text-emerald-600" }) {
   return (
-    <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false">
+    <svg
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path
         fillRule="evenodd"
         d="M16.707 5.293a1 1 0 010 1.414l-7.25 7.25a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414l2.293 2.293 6.543-6.543a1 1 0 011.414 0z"
@@ -65,7 +71,13 @@ function IconCheck({ className = "h-4 w-4 text-emerald-600" }) {
 
 function IconX({ className = "h-4 w-4 text-rose-500" }) {
   return (
-    <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false">
+    <svg
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path
         fillRule="evenodd"
         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -79,7 +91,9 @@ export default function WhyWorkWithJulia() {
   return (
     <section id="why" className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
       <header className="mx-auto mb-12 max-w-3xl text-center">
-        <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Why Work With Julia</h2>
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+          Why Work With Julia
+        </h2>
       </header>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -102,9 +116,15 @@ export default function WhyWorkWithJulia() {
             </caption>
             <thead className="bg-slate-50 text-sm font-semibold text-slate-700">
               <tr>
-                <th scope="col" className="px-4 py-3">What’s Included</th>
-                <th scope="col" className="px-4 py-3 text-slate-900">Owner-Managed</th>
-                <th scope="col" className="px-4 py-3 text-slate-900">With Julia</th>
+                <th scope="col" className="px-4 py-3">
+                  What’s Included
+                </th>
+                <th scope="col" className="px-4 py-3 text-slate-900">
+                  Owner-Managed
+                </th>
+                <th scope="col" className="px-4 py-3 text-slate-900">
+                  With Julia
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -140,3 +160,4 @@ export default function WhyWorkWithJulia() {
     </section>
   );
 }
+
