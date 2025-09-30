@@ -44,7 +44,12 @@ const sanitizeOptionalString = (value: unknown) => {
   return trimmed.length > 0 ? trimmed : undefined;
 };
 
-const contactFormSchema: Schema<ContactFormData> = {
+export {
+  sanitizeOptionalString,
+  sanitizeRequiredString,
+};
+
+export const contactFormSchema: Schema<ContactFormData> = {
   name: {
     sanitize: value => ({ value: sanitizeRequiredString(value) }),
     validators: [
@@ -70,7 +75,7 @@ const contactFormSchema: Schema<ContactFormData> = {
   },
 };
 
-function validateSchema<T extends Record<string, unknown>>(
+export function validateSchema<T extends Record<string, unknown>>(
   schema: Schema<T>,
   data: Record<string, unknown>
 ): { success: true; data: T } | { success: false; errors: FieldErrors<T> } {
