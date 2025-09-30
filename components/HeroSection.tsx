@@ -1,12 +1,14 @@
 import Image from 'next/image';
 import Button from './Button';
 
+const HERO_IMAGE_SRC = process.env.NEXT_PUBLIC_HERO_IMAGE ?? '/images/echo-house.avif';
+
 export default function HeroSection() {
   return (
     <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-forest text-white">
       <div className="absolute inset-0">
         <Image
-          src="/images/echo-house.avif"
+          src={HERO_IMAGE_SRC}
           alt="Echo House living room with warm natural wood and a stone fireplace"
           fill
           sizes="100vw"
