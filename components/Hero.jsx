@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 function BadgePill({ children }) {
@@ -11,13 +12,12 @@ function BadgePill({ children }) {
 export default function Hero() {
   return (
     <section className="relative isolate min-h-[70vh]">
-      <img
+      <Image
         src="/img/hero-a-frame.jpg"
         alt="Cozy A-frame cabin glowing in a Pacific Northwest forest at dusk"
+        fill
+        priority
         className="absolute inset-0 h-full w-full object-cover object-center [filter:brightness(0.65)] sm:[filter:brightness(0.7)]"
-        loading="eager"
-        fetchpriority="high"
-        srcSet="/img/hero-a-frame-768.jpg 768w, /img/hero-a-frame-1280.jpg 1280w, /img/hero-a-frame-1920.jpg 1920w"
         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/45 to-black/60" aria-hidden="true" />
