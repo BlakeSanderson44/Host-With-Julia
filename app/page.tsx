@@ -179,7 +179,6 @@ const locations = [
   { name: 'Edmonds', description: 'Urban coastal stays with quick Seattle access.' },
   { name: 'Chelan', description: 'Lake country specialists for seasonal demand.' },
   { name: 'Ashford (Mt. Rainier)', description: 'Cabins at the gateway to Mt. Rainier.' },
-  { name: 'Brennan', description: 'Boutique stays off the Hood Canal.' },
 ];
 
 const properties: PropertyItem[] = [

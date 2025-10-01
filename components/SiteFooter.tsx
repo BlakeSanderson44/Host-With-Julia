@@ -23,7 +23,7 @@ export default function SiteFooter({ navItems }: SiteFooterProps) {
           <span>Touch Stay</span>
         </div>
         <p className="text-moss text-sm">
-          Proudly serving Edmonds, Chelan, Ashford, and Brennan — expanding across Western Washington.
+          Proudly serving Edmonds, Chelan, and Ashford — expanding across Western Washington.
         </p>
         <a href="https://instagram.com/hostwithjulia" target="_blank" rel="noopener noreferrer" className="hover:text-moss">
           Instagram
