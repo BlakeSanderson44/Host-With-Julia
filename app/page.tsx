@@ -234,28 +234,6 @@ const properties: PropertyItem[] = [
   },
 ];
 
-const features = [
-  { title: 'Faster Responses', description: '24/7 guest messaging under one hour.' },
-  { title: 'Optimized Pricing', description: 'Dynamic rates tuned to demand.' },
-  { title: 'Quality Control', description: 'Checklists and photo proof for every turnover.' },
-];
-
-const timeComparisons = [
-  { label: 'Owner-managed', value: '~25h', barClassName: 'bg-forest' },
-  { label: 'With Julia', value: '~2h', barClassName: 'bg-lake' },
-];
-
-const quickStats = ['🕒 Late-night calls: 4–6 → 0', '💬 Guest messages: handled', '🧹 Turnovers: managed'];
-
-const comparisonTable = [
-  { label: 'Guest Messaging', ownerManaged: 'Delayed', withJulia: '24/7 <1 hr' },
-  { label: 'Pricing', ownerManaged: 'Static', withJulia: 'Dynamic' },
-  { label: 'Guidebook', ownerManaged: 'None', withJulia: 'Touch Stay add-on' },
-  { label: 'Cleaning QC', ownerManaged: 'Inconsistent', withJulia: 'Checklists + photo proof' },
-  { label: 'Reviews/Ranking', ownerManaged: 'Hit-or-miss', withJulia: 'Superhost focus' },
-  { label: 'Reporting', ownerManaged: 'Ad-hoc', withJulia: 'Monthly summaries' },
-];
-
 const testimonials = [
   {
     id: 'testimonial-1',
@@ -275,12 +253,7 @@ export default function Home() {
         <ServicesSection services={services} />
         <LocationsSection locations={locations} />
         <PropertiesSection properties={properties} />
-        <AboutSection
-          features={features}
-          timeComparisons={timeComparisons}
-          quickStats={quickStats}
-          comparisonTable={comparisonTable}
-        />
+        <AboutSection />
         <TestimonialsSection testimonials={testimonials} />
         <ContactSection />
       </main>
