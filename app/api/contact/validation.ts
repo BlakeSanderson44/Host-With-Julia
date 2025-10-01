@@ -7,6 +7,16 @@ type ContactFormData = {
 
 type FieldErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string[]>>;
 
+type ValidationSuccess<T> = { success: true; data: T };
+type ValidationFailure<T extends Record<string, unknown>> = {
+  success: false;
+  errors: FieldErrors<T>;
+};
+
+type ValidationResult<T extends Record<string, unknown>> =
+  | ValidationSuccess<T>
+  | ValidationFailure<T>;
+
 type SchemaField<T> = {
   sanitize: (value: unknown) => { value: T; issues?: string[] };
   validators?: Array<(value: T) => string | null>;
@@ -71,7 +81,7 @@ export const contactFormSchema: Schema<ContactFormData> = {
 export function validateSchema<T extends Record<string, unknown>>(
   schema: Schema<T>,
   data: Record<string, unknown>
-): { success: true; data: T } | { success: false; errors: FieldErrors<T> } {
+): ValidationResult<T> {
   const fieldErrors: FieldErrors<T> = {};
   const result: Partial<T> = {};
   let hasErrors = false;
@@ -107,4 +117,12 @@ export function validateSchema<T extends Record<string, unknown>>(
   return { success: true, data: result as T };
 }
 
-export type { ContactFormData, Schema, SchemaField, FieldErrors };
+export type {
+  ContactFormData,
+  Schema,
+  SchemaField,
+  FieldErrors,
+  ValidationResult,
+  ValidationSuccess,
+  ValidationFailure,
+};
