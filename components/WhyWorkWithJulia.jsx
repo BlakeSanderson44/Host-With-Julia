@@ -1,38 +1,67 @@
 // FILE: <KEEP_SAME_PATH>
 import React from "react";
 
-const VALUE_PROPS = [
+const VALUE_PILLARS = [
   {
     title: "Faster Responses",
-    description: "24/7 guest messaging under one hour.",
+    description: "24/7 guest messaging under one hour",
   },
   {
     title: "Optimized Pricing",
-    description: "Dynamic rates tuned to demand.",
+    description: "Dynamic rates powered by PriceLabs",
   },
   {
-    title: "Quality Control",
-    description: "Standardized checklists with cleaner accountability.",
+    title: "Stress-Free Hosting",
+    description: "Custom support that adapts to your property setup",
   },
 ];
 
-const STAT_PILLS = [
-  "< 1 hr response time",
-  "0 missed turnovers in 12 mo",
-  "Serving Washington",
+const TIME_SAVINGS = [
+  { icon: "💬", label: "Guest messages handled" },
+  { icon: "⏰", label: "Late-night calls reduced: 4–6 → 0" },
+  {
+    icon: "🛏",
+    label: "Turnovers coordinated with your local cleaning team",
+  },
 ];
 
-const COMPARISON_ROWS = [
-  { label: "Guest Messaging", owner: "Delayed", julia: "24/7 < 1 hr" },
-  { label: "Pricing", owner: "Static", julia: "Dynamic" },
-  { label: "Guidebook", owner: "None", julia: "Touch Stay add-on" },
+type ColumnContent = { icon?: "check" | "x"; text?: string };
+
+const COMPARISON_ROWS: Array<{
+  label: string;
+  owner: ColumnContent;
+  julia: ColumnContent;
+}> = [
   {
-    label: "Cleaning QC",
-    owner: "Inconsistent",
-    julia: "Standardized checklists & spot checks",
+    label: "24/7 Guest Messaging (<1 hr)",
+    owner: { icon: "x" },
+    julia: { icon: "check" },
   },
-  { label: "Reviews/Ranking", owner: "Hit-or-miss", julia: "Superhost focus" },
-  { label: "Reporting", owner: "Ad-hoc", julia: "Monthly summaries" },
+  {
+    label: "Dynamic Pricing (via PriceLabs)",
+    owner: { text: "Manual or static" },
+    julia: { icon: "check", text: "Automated & optimized" },
+  },
+  {
+    label: "Touch Stay Digital Guidebook (Add-On)",
+    owner: { icon: "x" },
+    julia: { icon: "check", text: "Available" },
+  },
+  {
+    label: "Turnover Coordination",
+    owner: { text: "On owner" },
+    julia: { icon: "check", text: "Managed with your team" },
+  },
+  {
+    label: "Review & Ranking Strategy",
+    owner: { text: "Hit-or-miss" },
+    julia: { icon: "check", text: "Superhost Focus" },
+  },
+  {
+    label: "Reporting",
+    owner: { text: "Ad-hoc" },
+    julia: { icon: "check", text: "Monthly Summaries" },
+  },
 ];
 
 function ValueCard({ title, description }: { title: string; description: string }) {
@@ -41,14 +70,6 @@ function ValueCard({ title, description }: { title: string; description: string 
       <h3 className="text-base font-semibold text-slate-900">{title}</h3>
       <p className="mt-2 text-sm text-slate-600">{description}</p>
     </article>
-  );
-}
-
-function StatPill({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-emerald-600/20 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-900 shadow-sm dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-100">
-      {label}
-    </span>
   );
 }
 
@@ -97,31 +118,36 @@ export default function WhyWorkWithJulia() {
         </h2>
       </header>
 
-      {/* Value Props */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {VALUE_PROPS.map((item) => (
+        {VALUE_PILLARS.map((item) => (
           <ValueCard key={item.title} title={item.title} description={item.description} />
         ))}
       </div>
 
-      {/* Stat Pills */}
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-center">
-        {STAT_PILLS.map((pill) => (
-          <StatPill key={pill} label={pill} />
+      <div className="mt-10 flex flex-col items-stretch gap-4 sm:flex-row sm:justify-center">
+        {TIME_SAVINGS.map((item) => (
+          <div
+            key={item.label}
+            className="flex flex-1 items-center gap-3 rounded-full border border-emerald-600/20 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900 shadow-sm dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-100"
+          >
+            <span className="text-lg" aria-hidden="true">
+              {item.icon}
+            </span>
+            <span>{item.label}</span>
+          </div>
         ))}
       </div>
 
-      {/* Comparison Table */}
       <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <caption className="sr-only">
-              Comparison of Owner-Managed versus With Julia services and outcomes
+              Comparison of key services for owner-managed properties versus Host With Julia
             </caption>
             <thead className="bg-slate-50 text-sm font-semibold text-slate-700">
               <tr>
                 <th scope="col" className="px-4 py-3">
-                  What’s Included
+                  Feature
                 </th>
                 <th scope="col" className="px-4 py-3 text-slate-900">
                   Owner-Managed
@@ -138,23 +164,22 @@ export default function WhyWorkWithJulia() {
                     {row.label}
                   </th>
                   <td className="px-4 py-4 text-slate-700">
-                    {/* Accessible label for screen readers */}
                     <span className="sr-only">
-                      Owner-managed {row.label}: {row.owner}
+                      Owner-managed {row.label}: {row.owner.text ?? (row.owner.icon === "x" ? "Not included" : "Included")}
                     </span>
-                    {/* Visual */}
                     <span aria-hidden="true" className="inline-flex items-center gap-2">
-                      <IconX />
-                      <span>{row.owner}</span>
+                      {row.owner.icon === "x" && <IconX />}
+                      {row.owner.icon === "check" && <IconCheck className="h-4 w-4 text-emerald-600" />}
+                      {row.owner.text && <span>{row.owner.text}</span>}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-slate-900">
                     <span className="sr-only">
-                      With Julia {row.label}: {row.julia}
+                      With Julia {row.label}: {row.julia.text ?? "Included"}
                     </span>
                     <span aria-hidden="true" className="inline-flex items-center gap-2">
-                      <IconCheck />
-                      <span>{row.julia}</span>
+                      {row.julia.icon === "check" && <IconCheck />}
+                      {row.julia.text && <span>{row.julia.text}</span>}
                     </span>
                   </td>
                 </tr>
@@ -164,10 +189,15 @@ export default function WhyWorkWithJulia() {
         </div>
       </div>
 
-      <p className="mt-4 text-center text-xs text-slate-500">
-        Results based on recent properties managed in Washington; actual outcomes may vary by
-        market, seasonality, and property type.
-      </p>
+      <div className="mt-12 text-center">
+        <a
+          href="mailto:hello@hostwithjulia.com?subject=Inquiry%20from%20Host%20With%20Julia%20website"
+          aria-label="Contact Julia to save time and stress"
+          className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+        >
+          See How Much Time &amp; Stress You Could Save → Contact Julia
+        </a>
+      </div>
     </section>
   );
 }
