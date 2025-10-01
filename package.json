@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "echo \"No tests yet\""
+    "test": "tsc -p tsconfig.test.json && node dist-tests/tests/contactRoute.test.js"
   },
   "dependencies": {
     "next": "^14.0.4",

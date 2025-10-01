@@ -1,3 +1,4 @@
+// FILE: <KEEP_SAME_PATH>
 import React from "react";
 
 const VALUE_PROPS = [
@@ -34,7 +35,7 @@ const COMPARISON_ROWS = [
   { label: "Reporting", owner: "Ad-hoc", julia: "Monthly summaries" },
 ];
 
-function ValueCard({ title, description }) {
+function ValueCard({ title, description }: { title: string; description: string }) {
   return (
     <article className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-emerald-200 hover:shadow-md focus-within:border-emerald-300">
       <h3 className="text-base font-semibold text-slate-900">{title}</h3>
@@ -43,7 +44,7 @@ function ValueCard({ title, description }) {
   );
 }
 
-function StatPill({ label }) {
+function StatPill({ label }: { label: string }) {
   return (
     <span className="inline-flex items-center rounded-full border border-emerald-600/20 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-900 shadow-sm dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-100">
       {label}
@@ -69,7 +70,7 @@ function IconCheck({ className = "h-4 w-4 text-emerald-600" }) {
   );
 }
 
-function IconX({ className = "h-4 w-4 text-rose-500" }) {
+function IconX({ className = "h-4 w-4 text-rose-600" }) {
   return (
     <svg
       className={className}
@@ -96,18 +97,21 @@ export default function WhyWorkWithJulia() {
         </h2>
       </header>
 
+      {/* Value Props */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {VALUE_PROPS.map((item) => (
           <ValueCard key={item.title} title={item.title} description={item.description} />
         ))}
       </div>
 
+      {/* Stat Pills */}
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-center">
         {STAT_PILLS.map((pill) => (
           <StatPill key={pill} label={pill} />
         ))}
       </div>
 
+      {/* Comparison Table */}
       <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse text-left text-sm">
@@ -134,16 +138,22 @@ export default function WhyWorkWithJulia() {
                     {row.label}
                   </th>
                   <td className="px-4 py-4 text-slate-700">
-                    <span className="inline-flex items-center gap-2">
+                    {/* Accessible label for screen readers */}
+                    <span className="sr-only">
+                      Owner-managed {row.label}: {row.owner}
+                    </span>
+                    {/* Visual */}
+                    <span aria-hidden="true" className="inline-flex items-center gap-2">
                       <IconX />
-                      <span className="sr-only">{row.label} when owner-managed:</span>
                       <span>{row.owner}</span>
                     </span>
                   </td>
                   <td className="px-4 py-4 text-slate-900">
-                    <span className="inline-flex items-center gap-2">
+                    <span className="sr-only">
+                      With Julia {row.label}: {row.julia}
+                    </span>
+                    <span aria-hidden="true" className="inline-flex items-center gap-2">
                       <IconCheck />
-                      <span className="sr-only">{row.label} with Julia:</span>
                       <span>{row.julia}</span>
                     </span>
                   </td>
@@ -155,9 +165,9 @@ export default function WhyWorkWithJulia() {
       </div>
 
       <p className="mt-4 text-center text-xs text-slate-500">
-        Results based on recent properties managed in Washington; actual outcomes may vary by market, seasonality, and property type.
+        Results based on recent properties managed in Washington; actual outcomes may vary by
+        market, seasonality, and property type.
       </p>
     </section>
   );
 }
-
