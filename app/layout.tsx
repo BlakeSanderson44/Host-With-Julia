@@ -3,7 +3,7 @@ import { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Host With Julia - Boutique Airbnb Management in Western Washington',
+  title: 'Host With Julia',
   description:
     'Professional short-term rental management for Edmonds, Chelan, and Ashford. 24/7 guest messaging, dynamic pricing, and hands-off hosting.',
   keywords: 'Airbnb management, short-term rental, Western Washington, Edmonds, Chelan, Mt Rainier, property management, STR management',
@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     description: 'Professional short-term rental management in Western Washington.',
   },
   robots: 'index, follow',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export const viewport: Viewport = {
