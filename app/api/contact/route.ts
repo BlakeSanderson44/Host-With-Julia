@@ -29,11 +29,12 @@ function getClientIdentifier(request: Request) {
 function isRateLimited(identifier: string) {
   const now = Date.now();
 
-  submissionAttempts.forEach((entry, key) => {
-    if (entry.expiresAt <= now) {
+  for (const key of Array.from(submissionAttempts.keys())) {
+    const entry = submissionAttempts.get(key);
+    if (entry && entry.expiresAt <= now) {
       submissionAttempts.delete(key);
     }
-  });
+  }
 
   const entry = submissionAttempts.get(identifier);
 
