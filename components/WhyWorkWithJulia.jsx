@@ -1,8 +1,52 @@
+// FILE: <KEEP_SAME_PATH>
 import React from "react";
 
-function StatPill({ label }) {
+const VALUE_PROPS = [
+  {
+    title: "Faster Responses",
+    description: "24/7 guest messaging under one hour.",
+  },
+  {
+    title: "Optimized Pricing",
+    description: "Dynamic rates tuned to demand.",
+  },
+  {
+    title: "Quality Control",
+    description: "Standardized checklists with cleaner accountability.",
+  },
+];
+
+const STAT_PILLS = [
+  "< 1 hr response time",
+  "0 missed turnovers in 12 mo",
+  "Serving Washington",
+];
+
+const COMPARISON_ROWS = [
+  { label: "Guest Messaging", owner: "Delayed", julia: "24/7 < 1 hr" },
+  { label: "Pricing", owner: "Static", julia: "Dynamic" },
+  { label: "Guidebook", owner: "None", julia: "Touch Stay add-on" },
+  {
+    label: "Cleaning QC",
+    owner: "Inconsistent",
+    julia: "Standardized checklists & spot checks",
+  },
+  { label: "Reviews/Ranking", owner: "Hit-or-miss", julia: "Superhost focus" },
+  { label: "Reporting", owner: "Ad-hoc", julia: "Monthly summaries" },
+];
+
+function ValueCard({ title, description }: { title: string; description: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-emerald-700/20 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/20 dark:text-emerald-100">
+    <article className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-emerald-200 hover:shadow-md focus-within:border-emerald-300">
+      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+      <p className="mt-2 text-sm text-slate-600">{description}</p>
+    </article>
+  );
+}
+
+function StatPill({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-emerald-600/20 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-900 shadow-sm dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-100">
       {label}
     </span>
   );
@@ -44,84 +88,71 @@ function IconX({ className = "h-4 w-4 text-rose-600" }) {
   );
 }
 
-const comparisonRows = [
-  { label: "Guest Messaging", owner: "Delayed", julia: "24/7 < 1 hr" },
-  { label: "Pricing", owner: "Static", julia: "Dynamic" },
-  { label: "Guidebook", owner: "None", julia: "Touch Stay add-on" },
-  {
-    label: "Cleaning QC",
-    owner: "Inconsistent",
-    julia: "Standardized checklists & spot checks",
-  },
-  { label: "Reviews/Ranking", owner: "Hit-or-miss", julia: "Superhost focus" },
-  { label: "Reporting", owner: "Ad-hoc", julia: "Monthly summaries" },
-];
-
 export default function WhyWorkWithJulia() {
   return (
     <section id="why" className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
-      <header className="mx-auto mb-10 max-w-3xl text-center">
-        <h2 className="text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
+      <header className="mx-auto mb-12 max-w-3xl text-center">
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
           Why Work With Julia
         </h2>
       </header>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:border-gray-300">
-          <h3 className="text-base font-semibold text-gray-900">Faster Responses</h3>
-          <p className="mt-2 text-sm text-gray-600">24/7 guest messaging under one hour.</p>
-        </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:border-gray-300">
-          <h3 className="text-base font-semibold text-gray-900">Optimized Pricing</h3>
-          <p className="mt-2 text-sm text-gray-600">Dynamic rates tuned to demand.</p>
-        </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:border-gray-300">
-          <h3 className="text-base font-semibold text-gray-900">Quality Control</h3>
-          <p className="mt-2 text-sm text-gray-600">Standardized checklists with cleaner accountability.</p>
-        </div>
+      {/* Value Props */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {VALUE_PROPS.map((item) => (
+          <ValueCard key={item.title} title={item.title} description={item.description} />
+        ))}
       </div>
 
+      {/* Stat Pills */}
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-center">
-        <StatPill label="< 1 hr response time" />
-        <StatPill label="0 missed turnovers in 12 mo" />
-        <StatPill label="Serving Washington" />
+        {STAT_PILLS.map((pill) => (
+          <StatPill key={pill} label={pill} />
+        ))}
       </div>
 
-      <div className="mt-10 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      {/* Comparison Table */}
+      <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full table-fixed border-collapse text-left">
+          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <caption className="sr-only">
               Comparison of Owner-Managed versus With Julia services and outcomes
             </caption>
-            <thead className="bg-gray-50 text-sm">
+            <thead className="bg-slate-50 text-sm font-semibold text-slate-700">
               <tr>
-                <th scope="col" className="w-2/5 px-4 py-3 font-medium text-gray-700">
+                <th scope="col" className="px-4 py-3">
                   What’s Included
                 </th>
-                <th scope="col" className="w-3/12 px-4 py-3 font-semibold text-gray-900">
+                <th scope="col" className="px-4 py-3 text-slate-900">
                   Owner-Managed
                 </th>
-                <th scope="col" className="w-3/12 px-4 py-3 font-semibold text-gray-900">
+                <th scope="col" className="px-4 py-3 text-slate-900">
                   With Julia
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
-              {comparisonRows.map((row) => (
-                <tr key={row.label} className="transition-colors hover:bg-gray-50">
-                  <th scope="row" className="px-4 py-4 font-medium text-gray-900">
+            <tbody className="divide-y divide-slate-200">
+              {COMPARISON_ROWS.map((row) => (
+                <tr key={row.label} className="transition-colors hover:bg-emerald-50/40">
+                  <th scope="row" className="px-4 py-4 font-medium text-slate-900">
                     {row.label}
                   </th>
-                  <td className="px-4 py-4">
-                    <span className="sr-only">Owner-managed {row.label}: {row.owner}</span>
-                    <span aria-hidden="true" className="inline-flex items-center gap-2 text-gray-700">
+                  <td className="px-4 py-4 text-slate-700">
+                    {/* Accessible label for screen readers */}
+                    <span className="sr-only">
+                      Owner-managed {row.label}: {row.owner}
+                    </span>
+                    {/* Visual */}
+                    <span aria-hidden="true" className="inline-flex items-center gap-2">
                       <IconX />
                       <span>{row.owner}</span>
                     </span>
                   </td>
-                  <td className="px-4 py-4">
-                    <span className="sr-only">With Julia {row.label}: {row.julia}</span>
-                    <span aria-hidden="true" className="inline-flex items-center gap-2 text-gray-900">
+                  <td className="px-4 py-4 text-slate-900">
+                    <span className="sr-only">
+                      With Julia {row.label}: {row.julia}
+                    </span>
+                    <span aria-hidden="true" className="inline-flex items-center gap-2">
                       <IconCheck />
                       <span>{row.julia}</span>
                     </span>
@@ -133,8 +164,9 @@ export default function WhyWorkWithJulia() {
         </div>
       </div>
 
-      <p className="mt-4 text-center text-xs text-gray-500">
-        Results based on recent properties managed in Washington; actual outcomes may vary by market, seasonality, and property type.
+      <p className="mt-4 text-center text-xs text-slate-500">
+        Results based on recent properties managed in Washington; actual outcomes may vary by
+        market, seasonality, and property type.
       </p>
     </section>
   );
