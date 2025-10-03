@@ -7,6 +7,7 @@ import LocationsSection from '@/components/LocationsSection';
 import ServicesSection from '@/components/ServicesSection';
 import SiteFooter from '@/components/SiteFooter';
 
+import type { AboutSectionProps } from '@/components/AboutSection';
 import type { PropertyItem } from '@/components/PropertiesSection';
 
 function SectionHeadingSkeleton({ align = 'center' }: { align?: 'left' | 'center' }) {
@@ -127,7 +128,7 @@ const PropertiesSection = dynamic(() => import('@/components/PropertiesSection')
   ssr: false,
 });
 
-const AboutSection = dynamic(() => import('@/components/AboutSection'), {
+const AboutSection = dynamic<AboutSectionProps>(() => import('@/components/AboutSection'), {
   loading: () => <AboutSectionSkeleton />,
 });
 
@@ -149,6 +150,60 @@ const navItems: NavItem[] = [
   { href: '#faqs', label: 'Testimonials' },
   { href: '#contact', label: 'Contact' },
 ];
+
+const aboutSectionContent = {
+  valuePillars: [
+    {
+      title: 'Faster Responses',
+      description: '24/7 guest messaging under one hour',
+    },
+    {
+      title: 'Optimized Pricing',
+      description: 'Dynamic rates powered by PriceLabs',
+    },
+    {
+      title: 'Stress-Free Hosting',
+      description: 'Custom support that adapts to your property setup',
+    },
+  ],
+  timeSavings: [
+    { icon: '💬', label: 'Guest messages handled' },
+    { icon: '⏰', label: 'Late-night calls reduced: 4–6 → 0' },
+    { icon: '🛏', label: 'Turnovers coordinated with your local cleaning team' },
+  ],
+  comparisonRows: [
+    {
+      label: '24/7 Guest Messaging (<1 hr)',
+      owner: { icon: 'x' },
+      julia: { icon: 'check' },
+    },
+    {
+      label: 'Dynamic Pricing (via PriceLabs)',
+      owner: { text: 'Manual or static' },
+      julia: { icon: 'check', text: 'Automated & optimized' },
+    },
+    {
+      label: 'Touch Stay Digital Guidebook (Add-On)',
+      owner: { icon: 'x' },
+      julia: { icon: 'check', text: 'Available' },
+    },
+    {
+      label: 'Turnover Coordination',
+      owner: { text: 'On owner' },
+      julia: { icon: 'check', text: 'Managed with your team' },
+    },
+    {
+      label: 'Review & Ranking Strategy',
+      owner: { text: 'Hit-or-miss' },
+      julia: { icon: 'check', text: 'Superhost Focus' },
+    },
+    {
+      label: 'Reporting',
+      owner: { text: 'Ad-hoc' },
+      julia: { icon: 'check', text: 'Monthly Summaries' },
+    },
+  ],
+} satisfies AboutSectionProps;
 
 const howItWorksSteps = [
   { title: 'Walkthrough & Strategy', description: 'On-site review and tailored plan.' },
@@ -234,28 +289,6 @@ const properties: PropertyItem[] = [
   },
 ];
 
-const features = [
-  { title: 'Faster Responses', description: '24/7 guest messaging under one hour.' },
-  { title: 'Optimized Pricing', description: 'Dynamic rates tuned to demand.' },
-  { title: 'Quality Control', description: 'Checklists and photo proof for every turnover.' },
-];
-
-const timeComparisons = [
-  { label: 'Owner-managed', value: '~25h', barClassName: 'bg-forest' },
-  { label: 'With Julia', value: '~2h', barClassName: 'bg-lake' },
-];
-
-const quickStats = ['🕒 Late-night calls: 4–6 → 0', '💬 Guest messages: handled', '🧹 Turnovers: managed'];
-
-const comparisonTable = [
-  { label: 'Guest Messaging', ownerManaged: 'Delayed', withJulia: '24/7 <1 hr' },
-  { label: 'Pricing', ownerManaged: 'Static', withJulia: 'Dynamic' },
-  { label: 'Guidebook', ownerManaged: 'None', withJulia: 'Touch Stay add-on' },
-  { label: 'Cleaning QC', ownerManaged: 'Inconsistent', withJulia: 'Checklists + photo proof' },
-  { label: 'Reviews/Ranking', ownerManaged: 'Hit-or-miss', withJulia: 'Superhost focus' },
-  { label: 'Reporting', ownerManaged: 'Ad-hoc', withJulia: 'Monthly summaries' },
-];
-
 const testimonials = [
   {
     id: 'testimonial-1',
@@ -275,12 +308,7 @@ export default function Home() {
         <ServicesSection services={services} />
         <LocationsSection locations={locations} />
         <PropertiesSection properties={properties} />
-        <AboutSection
-          features={features}
-          timeComparisons={timeComparisons}
-          quickStats={quickStats}
-          comparisonTable={comparisonTable}
-        />
+        <AboutSection {...aboutSectionContent} />
         <TestimonialsSection testimonials={testimonials} />
         <ContactSection />
       </main>
