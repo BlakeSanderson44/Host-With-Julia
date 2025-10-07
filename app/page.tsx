@@ -7,6 +7,8 @@ import LocationsSection from '@/components/LocationsSection';
 import ServicesSection from '@/components/ServicesSection';
 import SiteFooter from '@/components/SiteFooter';
 
+import type { AboutSectionProps } from '@/components/AboutSection';
+
 import type { PropertyItem } from '@/components/PropertiesSection';
 
 function SectionHeadingSkeleton({ align = 'center' }: { align?: 'left' | 'center' }) {
@@ -234,27 +236,41 @@ const properties: PropertyItem[] = [
   },
 ];
 
-const features = [
-  { title: 'Faster Responses', description: '24/7 guest messaging under one hour.' },
-  { title: 'Optimized Pricing', description: 'Dynamic rates tuned to demand.' },
-  { title: 'Quality Control', description: 'Checklists and photo proof for every turnover.' },
-];
-
-const timeComparisons = [
-  { label: 'Owner-managed', value: '~25h', barClassName: 'bg-forest' },
-  { label: 'With Julia', value: '~2h', barClassName: 'bg-lake' },
-];
-
-const quickStats = ['🕒 Late-night calls: 4–6 → 0', '💬 Guest messages: handled', '🧹 Turnovers: managed'];
-
-const comparisonTable = [
-  { label: 'Guest Messaging', ownerManaged: 'Delayed', withJulia: '24/7 <1 hr' },
-  { label: 'Pricing', ownerManaged: 'Static', withJulia: 'Dynamic' },
-  { label: 'Guidebook', ownerManaged: 'None', withJulia: 'Touch Stay add-on' },
-  { label: 'Cleaning QC', ownerManaged: 'Inconsistent', withJulia: 'Checklists + photo proof' },
-  { label: 'Reviews/Ranking', ownerManaged: 'Hit-or-miss', withJulia: 'Superhost focus' },
-  { label: 'Reporting', ownerManaged: 'Ad-hoc', withJulia: 'Monthly summaries' },
-];
+const aboutSectionContent: AboutSectionProps = {
+  valuePillars: [
+    { title: 'Faster Responses', description: '24/7 guest messaging under one hour.' },
+    { title: 'Optimized Pricing', description: 'Dynamic rates tuned to demand.' },
+    { title: 'Quality Control', description: 'Checklists and photo proof for every turnover.' },
+  ],
+  timeSavings: [
+    {
+      task: 'Weekly owner hours',
+      ownerManaged: '20–25 hours coordinating stays',
+      withJulia: '~2 hours reviewing payouts',
+      description: 'Dynamic pricing, messaging, and vendor logistics are handled so you only approve key decisions.',
+    },
+    {
+      task: 'Guest communications',
+      ownerManaged: 'Late-night texts and weekend interruptions',
+      withJulia: 'Inbox handled 24/7',
+      description: 'Guests receive under-an-hour replies without you needing to watch your phone.',
+    },
+    {
+      task: 'Turnovers & restocks',
+      ownerManaged: 'Self-managed schedules and supply runs',
+      withJulia: 'QC + photo proof every stay',
+      description: 'Julia books cleaners, verifies standards, and keeps essentials stocked for you.',
+    },
+  ],
+  comparisonRows: [
+    { label: 'Guest Messaging', ownerManaged: 'Delayed', withJulia: '24/7 < 1 hr' },
+    { label: 'Pricing', ownerManaged: 'Static', withJulia: 'Dynamic revenue management' },
+    { label: 'Guidebook', ownerManaged: 'None', withJulia: 'Touch Stay digital guide' },
+    { label: 'Cleaning QC', ownerManaged: 'Inconsistent', withJulia: 'Checklists + photo proof' },
+    { label: 'Reviews/Ranking', ownerManaged: 'Hit-or-miss', withJulia: 'Superhost focus + follow-ups' },
+    { label: 'Reporting', ownerManaged: 'Ad-hoc', withJulia: 'Monthly summaries' },
+  ],
+};
 
 const testimonials = [
   {
@@ -275,12 +291,7 @@ export default function Home() {
         <ServicesSection services={services} />
         <LocationsSection locations={locations} />
         <PropertiesSection properties={properties} />
-        <AboutSection
-          features={features}
-          timeComparisons={timeComparisons}
-          quickStats={quickStats}
-          comparisonTable={comparisonTable}
-        />
+        <AboutSection {...aboutSectionContent} />
         <TestimonialsSection testimonials={testimonials} />
         <ContactSection />
       </main>
