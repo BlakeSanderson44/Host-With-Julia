@@ -8,7 +8,6 @@ import ServicesSection from '@/components/ServicesSection';
 import SiteFooter from '@/components/SiteFooter';
 
 import type { AboutSectionProps } from '@/components/AboutSection';
-
 import type { PropertyItem } from '@/components/PropertiesSection';
 
 function SectionHeadingSkeleton({ align = 'center' }: { align?: 'left' | 'center' }) {
@@ -129,7 +128,7 @@ const PropertiesSection = dynamic(() => import('@/components/PropertiesSection')
   ssr: false,
 });
 
-const AboutSection = dynamic(() => import('@/components/AboutSection'), {
+const AboutSection = dynamic<AboutSectionProps>(() => import('@/components/AboutSection'), {
   loading: () => <AboutSectionSkeleton />,
 });
 
@@ -151,6 +150,60 @@ const navItems: NavItem[] = [
   { href: '#faqs', label: 'Testimonials' },
   { href: '#contact', label: 'Contact' },
 ];
+
+const aboutSectionContent = {
+  valuePillars: [
+    {
+      title: 'Faster Responses',
+      description: '24/7 guest messaging under one hour',
+    },
+    {
+      title: 'Optimized Pricing',
+      description: 'Dynamic rates powered by PriceLabs',
+    },
+    {
+      title: 'Stress-Free Hosting',
+      description: 'Custom support that adapts to your property setup',
+    },
+  ],
+  timeSavings: [
+    { icon: '💬', label: 'Guest messages handled' },
+    { icon: '⏰', label: 'Late-night calls reduced: 4–6 → 0' },
+    { icon: '🛏', label: 'Turnovers coordinated with your local cleaning team' },
+  ],
+  comparisonRows: [
+    {
+      label: '24/7 Guest Messaging (<1 hr)',
+      owner: { icon: 'x' },
+      julia: { icon: 'check' },
+    },
+    {
+      label: 'Dynamic Pricing (via PriceLabs)',
+      owner: { text: 'Manual or static' },
+      julia: { icon: 'check', text: 'Automated & optimized' },
+    },
+    {
+      label: 'Touch Stay Digital Guidebook (Add-On)',
+      owner: { icon: 'x' },
+      julia: { icon: 'check', text: 'Available' },
+    },
+    {
+      label: 'Turnover Coordination',
+      owner: { text: 'On owner' },
+      julia: { icon: 'check', text: 'Managed with your team' },
+    },
+    {
+      label: 'Review & Ranking Strategy',
+      owner: { text: 'Hit-or-miss' },
+      julia: { icon: 'check', text: 'Superhost Focus' },
+    },
+    {
+      label: 'Reporting',
+      owner: { text: 'Ad-hoc' },
+      julia: { icon: 'check', text: 'Monthly Summaries' },
+    },
+  ],
+} satisfies AboutSectionProps;
 
 const howItWorksSteps = [
   { title: 'Walkthrough & Strategy', description: 'On-site review and tailored plan.' },
@@ -235,76 +288,6 @@ const properties: PropertyItem[] = [
     airbnbUrl: 'https://www.airbnb.com/rooms/791580934465838010',
   },
 ];
-
-const aboutSectionContent: AboutSectionProps = {
-  valuePillars: [
-    {
-      title: 'Faster Responses',
-      description: '24/7 guest messaging answered in under an hour, even on weekends.',
-    },
-    {
-      title: 'Optimized Pricing',
-      description: 'Revenue-focused rate management tuned to seasonality and local demand.',
-    },
-    {
-      title: 'Quality Control',
-      description: 'Turnover checklists and photo proof that keep your property inspection-ready.',
-    },
-  ],
-  timeSavings: [
-    {
-      task: 'Weekly owner hours',
-      ownerManaged: '20–25 hours coordinating stays',
-      withJulia: '~2 hours reviewing payouts',
-      description:
-        'Dynamic pricing, guest messaging, and vendor logistics are handled so you only approve key decisions.',
-    },
-    {
-      task: 'Guest communications',
-      ownerManaged: 'Late-night texts and weekend interruptions',
-      withJulia: 'Inbox handled 24/7',
-      description: 'Guests receive sub-hour replies without you needing to monitor your phone.',
-    },
-    {
-      task: 'Turnovers & restocks',
-      ownerManaged: 'Self-managed schedules and supply runs',
-      withJulia: 'QC + photo proof every stay',
-      description: 'Julia books cleaners, verifies standards, and keeps essentials stocked for you.',
-    },
-  ],
-  comparisonRows: [
-    {
-      label: 'Guest Messaging',
-      ownerManaged: 'Delayed replies after hours',
-      withJulia: '24/7 coverage within an hour',
-    },
-    {
-      label: 'Pricing',
-      ownerManaged: 'Static nightly rate',
-      withJulia: 'Dynamic revenue management',
-    },
-    {
-      label: 'Guidebook',
-      ownerManaged: 'No pre-arrival info',
-      withJulia: 'Touch Stay digital guide',
-    },
-    {
-      label: 'Cleaning QC',
-      ownerManaged: 'Inconsistent turnover standards',
-      withJulia: 'Checklists + photo proof',
-    },
-    {
-      label: 'Reviews/Ranking',
-      ownerManaged: 'Hit-or-miss follow-up',
-      withJulia: 'Superhost focus + review requests',
-    },
-    {
-      label: 'Reporting',
-      ownerManaged: 'Ad-hoc updates',
-      withJulia: 'Monthly performance summaries',
-    },
-  ],
-};
 
 const testimonials = [
   {
