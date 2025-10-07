@@ -238,22 +238,32 @@ const properties: PropertyItem[] = [
 
 const aboutSectionContent: AboutSectionProps = {
   valuePillars: [
-    { title: 'Faster Responses', description: '24/7 guest messaging under one hour.' },
-    { title: 'Optimized Pricing', description: 'Dynamic rates tuned to demand.' },
-    { title: 'Quality Control', description: 'Checklists and photo proof for every turnover.' },
+    {
+      title: 'Faster Responses',
+      description: '24/7 guest messaging answered in under an hour, even on weekends.',
+    },
+    {
+      title: 'Optimized Pricing',
+      description: 'Revenue-focused rate management tuned to seasonality and local demand.',
+    },
+    {
+      title: 'Quality Control',
+      description: 'Turnover checklists and photo proof that keep your property inspection-ready.',
+    },
   ],
   timeSavings: [
     {
       task: 'Weekly owner hours',
       ownerManaged: '20–25 hours coordinating stays',
       withJulia: '~2 hours reviewing payouts',
-      description: 'Dynamic pricing, messaging, and vendor logistics are handled so you only approve key decisions.',
+      description:
+        'Dynamic pricing, guest messaging, and vendor logistics are handled so you only approve key decisions.',
     },
     {
       task: 'Guest communications',
       ownerManaged: 'Late-night texts and weekend interruptions',
       withJulia: 'Inbox handled 24/7',
-      description: 'Guests receive under-an-hour replies without you needing to watch your phone.',
+      description: 'Guests receive sub-hour replies without you needing to monitor your phone.',
     },
     {
       task: 'Turnovers & restocks',
@@ -263,12 +273,36 @@ const aboutSectionContent: AboutSectionProps = {
     },
   ],
   comparisonRows: [
-    { label: 'Guest Messaging', ownerManaged: 'Delayed', withJulia: '24/7 < 1 hr' },
-    { label: 'Pricing', ownerManaged: 'Static', withJulia: 'Dynamic revenue management' },
-    { label: 'Guidebook', ownerManaged: 'None', withJulia: 'Touch Stay digital guide' },
-    { label: 'Cleaning QC', ownerManaged: 'Inconsistent', withJulia: 'Checklists + photo proof' },
-    { label: 'Reviews/Ranking', ownerManaged: 'Hit-or-miss', withJulia: 'Superhost focus + follow-ups' },
-    { label: 'Reporting', ownerManaged: 'Ad-hoc', withJulia: 'Monthly summaries' },
+    {
+      label: 'Guest Messaging',
+      ownerManaged: 'Delayed replies after hours',
+      withJulia: '24/7 coverage within an hour',
+    },
+    {
+      label: 'Pricing',
+      ownerManaged: 'Static nightly rate',
+      withJulia: 'Dynamic revenue management',
+    },
+    {
+      label: 'Guidebook',
+      ownerManaged: 'No pre-arrival info',
+      withJulia: 'Touch Stay digital guide',
+    },
+    {
+      label: 'Cleaning QC',
+      ownerManaged: 'Inconsistent turnover standards',
+      withJulia: 'Checklists + photo proof',
+    },
+    {
+      label: 'Reviews/Ranking',
+      ownerManaged: 'Hit-or-miss follow-up',
+      withJulia: 'Superhost focus + review requests',
+    },
+    {
+      label: 'Reporting',
+      ownerManaged: 'Ad-hoc updates',
+      withJulia: 'Monthly performance summaries',
+    },
   ],
 };
 
