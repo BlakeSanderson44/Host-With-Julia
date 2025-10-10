@@ -6,6 +6,7 @@ import HowItWorksSection from '@/components/HowItWorksSection';
 import LocationsSection from '@/components/LocationsSection';
 import ServicesSection from '@/components/ServicesSection';
 import SiteFooter from '@/components/SiteFooter';
+import StickyCTA from '@/components/StickyCTA';
 
 import type { AboutSectionProps } from '@/components/AboutSection';
 import type { PropertyItem } from '@/components/PropertiesSection';
@@ -309,8 +310,11 @@ export default function Home() {
         <LocationsSection locations={locations} />
         <PropertiesSection properties={properties} />
         <AboutSection {...aboutSectionContent} />
-        <TestimonialsSection testimonials={testimonials} />
+        <div className="mb-24 md:mb-0">
+          <TestimonialsSection testimonials={testimonials} />
+        </div>
         <ContactSection />
+        <StickyCTA />
       </main>
       <SiteFooter navItems={navItems} />
     </>
