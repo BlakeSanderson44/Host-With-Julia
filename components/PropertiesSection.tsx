@@ -169,6 +169,12 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
                       loading={index === 0 ? 'eager' : 'lazy'}
                       priority={index === 0}
                       sizes={defaultSizes}
+                      placeholder={index === 0 ? 'blur' : undefined}
+                      blurDataURL={
+                        index === 0
+                          ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMzIwJyBoZWlnaHQ9JzI0MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjZGVlNmY1Jy8+PC9zdmc+'
+                          : undefined
+                      }
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
