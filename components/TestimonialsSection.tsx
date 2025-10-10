@@ -1,3 +1,5 @@
+import Section from './ui/Section';
+
 interface Testimonial {
   id: string;
   quote: string;
@@ -5,11 +7,12 @@ interface Testimonial {
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
+  className?: string;
 }
 
-export default function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+export default function TestimonialsSection({ testimonials, className }: TestimonialsSectionProps) {
   return (
-    <section id="faqs" className="bg-sand py-20">
+    <Section id="faqs" className={`bg-sand py-20${className ? ` ${className}` : ''}`}>
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-forest text-center mb-10">Testimonials</h2>
         <div className="grid gap-8 md:grid-cols-3">
@@ -21,6 +24,6 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

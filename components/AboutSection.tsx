@@ -1,3 +1,5 @@
+import Section from './ui/Section';
+
 export type ValuePillar = { title: string; description: string };
 export type TimeSaving = { icon: string; label: string };
 type ColumnContent = { icon?: 'check' | 'x'; text?: string };
@@ -11,6 +13,7 @@ export type AboutSectionProps = {
   valuePillars: ValuePillar[];
   timeSavings: TimeSaving[];
   comparisonRows: ComparisonRow[];
+  className?: string;
 };
 
 function IconCheck({ className = 'h-4 w-4 text-forest' }: { className?: string }) {
@@ -46,9 +49,9 @@ function ValueCard({ title, description }: ValuePillar) {
   );
 }
 
-export default function AboutSection({ valuePillars, timeSavings, comparisonRows }: AboutSectionProps) {
+export default function AboutSection({ valuePillars, timeSavings, comparisonRows, className }: AboutSectionProps) {
   return (
-    <section id="about" className="py-20">
+    <Section id="about" className={`py-20${className ? ` ${className}` : ''}`}>
       <div className="mx-auto max-w-6xl px-4">
         <header className="mx-auto mb-12 max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-forest sm:text-4xl">Why Work With Julia</h2>
@@ -138,6 +141,6 @@ export default function AboutSection({ valuePillars, timeSavings, comparisonRows
           </a>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
