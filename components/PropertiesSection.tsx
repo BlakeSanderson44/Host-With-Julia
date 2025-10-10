@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { defaultSizes, requireAlt } from '@/lib/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface PropertyItem {
@@ -149,47 +150,53 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
             className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth pb-4 snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollBehavior: 'smooth' }}
             >
-            {properties.map((property, index) => (
-              <div
-                key={property.id}
-                data-card-index={index}
-                className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2 flex-shrink-0 w-80 snap-start"
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src={property.image}
-                    alt={`${property.name} - ${property.description}`}
-                    fill
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                    priority={index === 0}
-                    sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 320px"
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
-                    ⭐ {property.rating.toFixed(2)}
+            {properties.map((property, index) => {
+              const altText = requireAlt(
+                [property.name, property.description].filter(Boolean).join(' – '),
+              );
+
+              return (
+                <div
+                  key={property.id}
+                  data-card-index={index}
+                  className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2 flex-shrink-0 w-80 snap-start"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <Image
+                      src={property.image}
+                      alt={altText}
+                      fill
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      priority={index === 0}
+                      sizes={defaultSizes}
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
+                      ⭐ {property.rating.toFixed(2)}
+                    </div>
+                    <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
+                      ${property.price}/night
+                    </div>
                   </div>
-                  <div className="absolute top-4 right-4 bg-accent text-white rounded-full px-3 py-1 text-xs font-semibold">
-                    ${property.price}/night
+                  <div className="p-6">
+                    <h3 className="font-bold text-lg text-charcoal mb-2">{property.name}</h3>
+                    <p className="text-sm text-slate mb-4">{property.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-light">{property.location}</span>
+                      <a
+                        href={property.airbnbUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                      >
+                        View on Airbnb
+                        <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg text-charcoal mb-2">{property.name}</h3>
-                  <p className="text-sm text-slate mb-4">{property.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-light">{property.location}</span>
-                    <a
-                      href={property.airbnbUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
-                    >
-                      View on Airbnb
-                      <span className="group-hover:translate-x-1 transition-transform">↗</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         <div className="flex justify-center mt-8 space-x-2" aria-label="Select featured property">
