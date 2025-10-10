@@ -150,7 +150,7 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
             className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth pb-4 snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollBehavior: 'smooth' }}
             >
-            {properties.map((property, index) => {
+            {properties.map((property, idx) => {
               const altText = requireAlt(
                 [property.name, property.description].filter(Boolean).join(' – '),
               );
@@ -158,11 +158,11 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
               return (
                 <div
                   key={property.id}
-                  data-card-index={index}
+                  data-card-index={idx}
                   className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2 flex-shrink-0 w-80 snap-start"
                 >
                   <div className="relative h-64 overflow-hidden">
-                    {index === 0 ? (
+                    {idx === 0 ? (
                       <Image
                         src={property.image}
                         alt={altText}
@@ -213,18 +213,18 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
           </div>
         </div>
         <div className="flex justify-center mt-8 space-x-2" aria-label="Select featured property">
-          {properties.map((property, index) => (
+          {properties.map((property, idx) => (
             <button
               key={property.id}
               type="button"
-              aria-label={`Go to property ${index + 1}`}
-              aria-current={activeIndex === index ? 'true' : undefined}
+              aria-label={`Go to property ${idx + 1}`}
+              aria-current={activeIndex === idx ? 'true' : 'false'}
               onClick={() => {
-                const target = carouselRef.current?.querySelector<HTMLElement>(`[data-card-index="${index}"]`);
+                const target = carouselRef.current?.querySelector<HTMLElement>(`[data-card-index="${idx}"]`);
                 target?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
               }}
               className={`h-2 w-2 rounded-full transition-transform duration-200 ${
-                activeIndex === index ? 'bg-forest scale-110' : 'bg-forest/30 hover:bg-forest/50'
+                activeIndex === idx ? 'bg-forest scale-110' : 'bg-forest/30 hover:bg-forest/50'
               }`}
             />
           ))}
