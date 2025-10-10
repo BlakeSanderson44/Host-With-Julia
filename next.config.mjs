@@ -15,6 +15,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'a1.muscache.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'a2.muscache.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
