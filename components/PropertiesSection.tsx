@@ -162,21 +162,28 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
                   className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2 flex-shrink-0 w-80 snap-start"
                 >
                   <div className="relative h-64 overflow-hidden">
-                    <Image
-                      src={property.image}
-                      alt={altText}
-                      fill
-                      loading={index === 0 ? 'eager' : 'lazy'}
-                      priority={index === 0}
-                      sizes={defaultSizes}
-                      placeholder={index === 0 ? 'blur' : undefined}
-                      blurDataURL={
-                        index === 0
-                          ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
-                          : undefined
-                      }
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                    {index === 0 ? (
+                      <Image
+                        src={property.image}
+                        alt={altText}
+                        fill
+                        loading="eager"
+                        priority
+                        sizes={defaultSizes}
+                        placeholder="blur"
+                        blurDataURL="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <Image
+                        src={property.image}
+                        alt={altText}
+                        fill
+                        loading="lazy"
+                        sizes={defaultSizes}
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    )}
                     <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
                       ⭐ {property.rating.toFixed(2)}
                     </div>
