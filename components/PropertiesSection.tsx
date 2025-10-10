@@ -22,6 +22,7 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const updateScrollState = useCallback(() => {
     const carousel = carouselRef.current;
@@ -55,6 +56,44 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
 
   useEffect(() => {
     const carousel = carouselRef.current;
+    if (!carousel || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
+    const cards = Array.from(carousel.querySelectorAll('[data-card-index]'));
+    if (!cards.length) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let bestEntry: { index: number; ratio: number } | null = null;
+
+        entries.forEach((entry) => {
+          const index = Number((entry.target as HTMLElement).dataset.cardIndex ?? 0);
+          if (!bestEntry || entry.intersectionRatio > bestEntry.ratio) {
+            bestEntry = { index, ratio: entry.intersectionRatio };
+          }
+        });
+
+        if (bestEntry && bestEntry.ratio > 0) {
+          const nextIndex = bestEntry.index;
+          setActiveIndex((prev) => (prev === nextIndex ? prev : nextIndex));
+        }
+      },
+      {
+        root: carousel,
+        threshold: [0.25, 0.5, 0.75, 0.95],
+      },
+    );
+
+    cards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [properties]);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
     if (!carousel) {
       return;
     }
@@ -72,13 +111,13 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
   }, [updateScrollState]);
 
   return (
-    <section id="properties" className="bg-sand py-20">
+    <section id="properties" className="bg-sand py-20" role="region" aria-labelledby="properties-heading">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-forest text-center mb-4">Properties</h2>
         <p className="text-center text-slate mb-12 max-w-2xl mx-auto">
           Discover our carefully curated collection of boutique properties across Western Washington
         </p>
-        <div className="relative">
+        <div className="relative" aria-live="polite">
           <button
             type="button"
             onClick={() => scrollCarousel(-400)}
@@ -107,20 +146,23 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
           </button>
           <div
             ref={carouselRef}
-            className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {properties.map((property) => (
+            className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth pb-4 snap-x snap-mandatory"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollBehavior: 'smooth' }}
+            >
+            {properties.map((property, index) => (
               <div
                 key={property.id}
-                className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2 flex-shrink-0 w-80"
+                data-card-index={index}
+                className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2 flex-shrink-0 w-80 snap-start"
               >
                 <div className="relative h-64 overflow-hidden">
                   <Image
                     src={property.image}
                     alt={`${property.name} - ${property.description}`}
                     fill
-                    sizes="(max-width: 768px) 80vw, 320px"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    priority={index === 0}
+                    sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 320px"
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-forest">
@@ -150,9 +192,21 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
             ))}
           </div>
         </div>
-        <div className="flex justify-center mt-8 space-x-2">
-          {properties.map((property) => (
-            <div key={property.id} className="w-2 h-2 bg-forest/30 rounded-full" />
+        <div className="flex justify-center mt-8 space-x-2" aria-label="Select featured property">
+          {properties.map((property, index) => (
+            <button
+              key={property.id}
+              type="button"
+              aria-label={`Go to property ${index + 1}`}
+              aria-current={activeIndex === index ? 'true' : undefined}
+              onClick={() => {
+                const target = carouselRef.current?.querySelector<HTMLElement>(`[data-card-index="${index}"]`);
+                target?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+              }}
+              className={`h-2 w-2 rounded-full transition-transform duration-200 ${
+                activeIndex === index ? 'bg-forest scale-110' : 'bg-forest/30 hover:bg-forest/50'
+              }`}
+            />
           ))}
         </div>
       </div>
