@@ -15,6 +15,8 @@ export default function HeroSection() {
           sizes={defaultSizes}
           className="object-cover"
           priority
+          placeholder="blur"
+          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMzAwJyBoZWlnaHQ9JzIwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjMDA2MTQzJy8+PC9zdmc+"
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-forest/70 via-forest/40 to-transparent" />
       </div>
