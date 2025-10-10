@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface PropertyItem {
   id: string;
@@ -20,13 +20,56 @@ interface PropertiesSectionProps {
 
 export default function PropertiesSection({ properties }: PropertiesSectionProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    const carousel = carouselRef.current;
+
+    if (!carousel) {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = carousel;
+    const maxScrollLeft = Math.max(scrollWidth - clientWidth, 0);
+    const threshold = 1;
+
+    setCanScrollLeft(scrollLeft > threshold);
+    setCanScrollRight(maxScrollLeft - scrollLeft > threshold);
+  }, []);
 
   const scrollCarousel = useCallback(
     (offset: number) => {
-      carouselRef.current?.scrollBy({ left: offset, behavior: 'smooth' });
+      const carousel = carouselRef.current;
+      if (!carousel) {
+        return;
+      }
+
+      carousel.scrollBy({ left: offset, behavior: 'smooth' });
+      requestAnimationFrame(updateScrollState);
     },
-    [carouselRef],
+    [updateScrollState],
   );
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) {
+      return;
+    }
+
+    const handleScroll = () => updateScrollState();
+
+    updateScrollState();
+    carousel.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', updateScrollState);
+
+    return () => {
+      carousel.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [updateScrollState]);
 
   return (
     <section id="properties" className="bg-sand py-20">
@@ -39,7 +82,10 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
           <button
             type="button"
             onClick={() => scrollCarousel(-400)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -ml-4 transition-all duration-300 hover:scale-110"
+            disabled={!canScrollLeft}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -ml-4 transition-all duration-300 hover:scale-110 ${
+              canScrollLeft ? '' : 'opacity-0 pointer-events-none'
+            }`}
             aria-label="Previous properties"
           >
             <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +95,10 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
           <button
             type="button"
             onClick={() => scrollCarousel(400)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -mr-4 transition-all duration-300 hover:scale-110"
+            disabled={!canScrollRight}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -mr-4 transition-all duration-300 hover:scale-110 ${
+              canScrollRight ? '' : 'opacity-0 pointer-events-none'
+            }`}
             aria-label="Next properties"
           >
             <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
