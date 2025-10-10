@@ -172,7 +172,7 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
                       placeholder={index === 0 ? 'blur' : undefined}
                       blurDataURL={
                         index === 0
-                          ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMzIwJyBoZWlnaHQ9JzI0MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjZGVlNmY1Jy8+PC9zdmc+'
+                          ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
                           : undefined
                       }
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
