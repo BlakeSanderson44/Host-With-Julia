@@ -47,60 +47,6 @@ function PropertiesSectionSkeleton() {
   );
 }
 
-function AboutSectionSkeleton() {
-  return (
-    <section id="about" className="py-20">
-      <div className="mx-auto max-w-6xl px-4 animate-pulse space-y-10">
-        <SectionHeadingSkeleton />
-        <div className="grid gap-6 md:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="space-y-3">
-              <div className="h-5 w-32 rounded bg-forest/20" />
-              <SectionParagraphSkeleton lines={3} />
-            </div>
-          ))}
-        </div>
-        <div className="space-y-4">
-          <SectionHeadingSkeleton />
-          <div className="space-y-3">
-            {Array.from({ length: 2 }).map((_, index) => (
-              <div key={index} className="h-4 w-full rounded bg-forest/10" />
-            ))}
-          </div>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-16 rounded bg-forest/10" />
-          ))}
-        </div>
-        <div className="overflow-hidden rounded-lg border border-sand">
-          <div className="h-10 bg-sand" />
-          <div className="space-y-3 p-4">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="h-4 w-full rounded bg-forest/10" />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function TestimonialsSectionSkeleton() {
-  return (
-    <section id="faqs" className="bg-sand py-20">
-      <div className="mx-auto max-w-6xl px-4 animate-pulse space-y-8">
-        <SectionHeadingSkeleton />
-        <div className="grid gap-6 md:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-32 rounded bg-white shadow" />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ContactSectionSkeleton() {
   return (
     <section id="contact" className="py-20">
@@ -130,11 +76,17 @@ const PropertiesSection = dynamic(() => import('@/components/PropertiesSection')
 });
 
 const AboutSection = dynamic<AboutSectionProps>(() => import('@/components/AboutSection'), {
-  loading: () => <AboutSectionSkeleton />,
+  loading: () => (
+    <div className="py-16 sm:py-24 text-center text-slate">Loading about…</div>
+  ),
+  ssr: true,
 });
 
 const TestimonialsSection = dynamic(() => import('@/components/TestimonialsSection'), {
-  loading: () => <TestimonialsSectionSkeleton />,
+  loading: () => (
+    <div className="py-16 sm:py-24 text-center text-slate">Loading testimonials…</div>
+  ),
+  ssr: true,
 });
 
 const ContactSection = dynamic(() => import('@/components/ContactSection'), {
