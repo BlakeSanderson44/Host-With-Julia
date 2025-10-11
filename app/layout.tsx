@@ -33,6 +33,40 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'LocalBusiness',
+              name: 'Host With Julia',
+              description:
+                'Boutique Airbnb management in the Pacific Northwest focused on warm hospitality and steady returns.',
+              url: 'https://host-with-julia.vercel.app',
+              areaServed: ['Edmonds WA', 'Chelan WA', 'Ashford WA', 'Western Washington'],
+              image: 'https://host-with-julia.vercel.app/og-image.jpg',
+              sameAs: [
+                'https://www.instagram.com/your-handle',
+                'https://www.facebook.com/your-page',
+              ],
+              address: {
+                '@type': 'PostalAddress',
+                addressRegion: 'WA',
+                addressCountry: 'US',
+              },
+              makesOffer: [
+                {
+                  '@type': 'Service',
+                  name: 'Short-term rental property management',
+                  areaServed: 'Western Washington',
+                },
+              ],
+            }),
+          }}
+        />
+      </head>
       <body className="bg-cream text-charcoal">
         <a
           href="#main"
