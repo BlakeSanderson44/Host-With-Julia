@@ -1,106 +1,93 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useRef, useState } from 'react';
 
-type FormStatus = { type: 'success' | 'error' | null; message: string };
-type ContactField = 'name' | 'email' | 'city' | 'message';
-type FieldErrors = Partial<Record<ContactField, string[]>>;
+type ContactValues = {
+  name: string;
+  email: string;
+  city: string;
+  message: string;
+};
 
-const initialStatus: FormStatus = { type: null, message: '' };
+type FieldErrors = Partial<Record<keyof ContactValues, string>>;
+
+type Status = 'idle' | 'success' | 'error';
+
+const initialValues: ContactValues = {
+  name: '',
+  email: '',
+  city: '',
+  message: '',
+};
 
 export default function ContactSection() {
-  const [formStatus, setFormStatus] = useState<FormStatus>(initialStatus);
+  const [values, setValues] = useState<ContactValues>(initialValues);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const getErrorMessages = (field: ContactField) => fieldErrors[field] ?? [];
-  const getDescribedBy = (field: ContactField) => {
-    const messages = getErrorMessages(field);
-    if (messages.length === 0) {
-      return undefined;
-    }
-    return messages
-      .map((_, index) => `contact-${field}-error-${index}`)
-      .join(' ');
-  };
+  const [status, setStatus] = useState<Status>('idle');
+  const alertRef = useRef<HTMLDivElement | null>(null);
 
   const inputClasses = (hasError: boolean) =>
     `w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent ${
       hasError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
     }`;
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setFormStatus(initialStatus);
-    setFieldErrors({});
-
-    try {
-      const formData = new FormData(event.currentTarget);
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        body: formData,
-      });
-
-      let result: unknown;
-
-      try {
-        result = await response.json();
-      } catch {
-        result = null;
+  const setField = (field: keyof ContactValues) =>
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setValues((previous) => ({ ...previous, [field]: event.target.value }));
+      setStatus('idle');
+      if (fieldErrors[field]) {
+        setFieldErrors((prev) => {
+          const next = { ...prev };
+          delete next[field];
+          return next;
+        });
       }
+    };
 
-      const validationErrors =
-        result && typeof result === 'object' && 'errors' in result
-          ? (result.errors as FieldErrors)
-          : undefined;
+  const validate = (formValues: ContactValues): FieldErrors => {
+    const errors: FieldErrors = {};
 
-      if (!response.ok) {
-        if (validationErrors) {
-          setFieldErrors(validationErrors);
-        }
-
-        const message =
-          result && typeof result === 'object' && 'message' in result && typeof result.message === 'string'
-            ? result.message
-            : 'Something went wrong. Please try again.';
-
-        setFormStatus({ type: 'error', message });
-        return;
-      }
-
-      if (validationErrors) {
-        setFieldErrors(validationErrors);
-      }
-
-      if (
-        result &&
-        typeof result === 'object' &&
-        'success' in result &&
-        typeof result.success === 'boolean'
-      ) {
-        if (result.success) {
-          const message =
-            'message' in result && typeof result.message === 'string'
-              ? result.message
-              : 'Thank you for your message!';
-          setFormStatus({ type: 'success', message });
-          event.currentTarget.reset();
-        } else {
-          const message =
-            'message' in result && typeof result.message === 'string'
-              ? result.message
-              : 'Something went wrong. Please try again.';
-          setFormStatus({ type: 'error', message });
-        }
-      } else {
-        setFormStatus({ type: 'error', message: 'Unexpected response. Please try again.' });
-      }
-    } catch {
-      setFormStatus({ type: 'error', message: 'Network error. Please try again.' });
-    } finally {
-      setIsSubmitting(false);
+    if (!formValues.name.trim()) {
+      errors.name = 'Please enter your name.';
     }
+
+    if (!formValues.email.trim()) {
+      errors.email = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)) {
+      errors.email = 'Enter a valid email address.';
+    }
+
+    if (!formValues.message.trim()) {
+      errors.message = 'Please add a short message.';
+    } else if (formValues.message.trim().length < 10) {
+      errors.message = 'Message should be at least 10 characters.';
+    }
+
+    return errors;
+  };
+
+  const focusAlert = () => {
+    requestAnimationFrame(() => {
+      alertRef.current?.focus();
+    });
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const errors = validate(values);
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setStatus('error');
+      focusAlert();
+      return;
+    }
+
+    setStatus('success');
+    setFieldErrors({});
+    setValues(initialValues);
+    focusAlert();
   };
 
   return (
@@ -111,17 +98,22 @@ export default function ContactSection() {
           <p className="text-slate">Tell me about your property and I&apos;ll reach out.</p>
           <div className="text-moss">🕒 Avg Airbnb response: under 1 hour.</div>
         </div>
+        <div
+          ref={alertRef}
+          tabIndex={-1}
+          aria-live="polite"
+          className="sr-only"
+        >
+          {status === 'success' && 'Thank you! Your message has been sent.'}
+          {status === 'error' && 'There are errors in the form below.'}
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          {formStatus.type && (
+          {status === 'success' && (
             <div
               role="alert"
-              className={`p-3 rounded ${
-                formStatus.type === 'success'
-                  ? 'bg-green-100 text-green-800 border border-green-300'
-                  : 'bg-red-100 text-red-800 border border-red-300'
-              }`}
+              className="p-3 rounded bg-green-100 text-green-800 border border-green-300"
             >
-              {formStatus.message}
+              Thank you for your message!
             </div>
           )}
           <div className="space-y-1">
@@ -132,20 +124,18 @@ export default function ContactSection() {
               id="contact-name"
               required
               name="name"
+              value={values.name}
+              onChange={setField('name')}
               placeholder="Name"
-              className={inputClasses(getErrorMessages('name').length > 0)}
-              aria-invalid={getErrorMessages('name').length > 0}
-              aria-describedby={getDescribedBy('name')}
+              className={inputClasses(Boolean(fieldErrors.name))}
+              aria-invalid={Boolean(fieldErrors.name)}
+              aria-describedby={fieldErrors.name ? 'contact-name-error' : undefined}
             />
-            {getErrorMessages('name').map((error, index) => (
-              <p
-                key={`name-error-${index}`}
-                id={`contact-name-error-${index}`}
-                className="text-sm text-red-600"
-              >
-                {error}
+            {fieldErrors.name && (
+              <p id="contact-name-error" className="text-sm text-red-600">
+                {fieldErrors.name}
               </p>
-            ))}
+            )}
           </div>
           <div className="space-y-1">
             <label htmlFor="contact-email" className="block text-sm font-medium text-forest">
@@ -156,20 +146,18 @@ export default function ContactSection() {
               required
               type="email"
               name="email"
+              value={values.email}
+              onChange={setField('email')}
               placeholder="Email"
-              className={inputClasses(getErrorMessages('email').length > 0)}
-              aria-invalid={getErrorMessages('email').length > 0}
-              aria-describedby={getDescribedBy('email')}
+              className={inputClasses(Boolean(fieldErrors.email))}
+              aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={fieldErrors.email ? 'contact-email-error' : undefined}
             />
-            {getErrorMessages('email').map((error, index) => (
-              <p
-                key={`email-error-${index}`}
-                id={`contact-email-error-${index}`}
-                className="text-sm text-red-600"
-              >
-                {error}
+            {fieldErrors.email && (
+              <p id="contact-email-error" className="text-sm text-red-600">
+                {fieldErrors.email}
               </p>
-            ))}
+            )}
           </div>
           <div className="space-y-1">
             <label htmlFor="contact-city" className="block text-sm font-medium text-forest">
@@ -178,20 +166,18 @@ export default function ContactSection() {
             <input
               id="contact-city"
               name="city"
+              value={values.city}
+              onChange={setField('city')}
               placeholder="Property City/Area"
-              className={inputClasses(getErrorMessages('city').length > 0)}
-              aria-invalid={getErrorMessages('city').length > 0}
-              aria-describedby={getDescribedBy('city')}
+              className={inputClasses(Boolean(fieldErrors.city))}
+              aria-invalid={Boolean(fieldErrors.city)}
+              aria-describedby={fieldErrors.city ? 'contact-city-error' : undefined}
             />
-            {getErrorMessages('city').map((error, index) => (
-              <p
-                key={`city-error-${index}`}
-                id={`contact-city-error-${index}`}
-                className="text-sm text-red-600"
-              >
-                {error}
+            {fieldErrors.city && (
+              <p id="contact-city-error" className="text-sm text-red-600">
+                {fieldErrors.city}
               </p>
-            ))}
+            )}
           </div>
           <div className="space-y-1">
             <label htmlFor="contact-message" className="block text-sm font-medium text-forest">
@@ -200,21 +186,19 @@ export default function ContactSection() {
             <textarea
               id="contact-message"
               name="message"
+              value={values.message}
+              onChange={setField('message')}
               placeholder="Message"
               rows={4}
-              className={inputClasses(getErrorMessages('message').length > 0)}
-              aria-invalid={getErrorMessages('message').length > 0}
-              aria-describedby={getDescribedBy('message')}
+              className={inputClasses(Boolean(fieldErrors.message))}
+              aria-invalid={Boolean(fieldErrors.message)}
+              aria-describedby={fieldErrors.message ? 'contact-message-error' : undefined}
             />
-            {getErrorMessages('message').map((error, index) => (
-              <p
-                key={`message-error-${index}`}
-                id={`contact-message-error-${index}`}
-                className="text-sm text-red-600"
-              >
-                {error}
+            {fieldErrors.message && (
+              <p id="contact-message-error" className="text-sm text-red-600">
+                {fieldErrors.message}
               </p>
-            ))}
+            )}
           </div>
           <div className="hidden" aria-hidden="true">
             <label htmlFor="contact-company">Company</label>
@@ -228,10 +212,9 @@ export default function ContactSection() {
           </div>
           <button
             type="submit"
-            disabled={isSubmitting}
             className="bg-forest text-white px-6 py-3 rounded-2xl hover:bg-lake transition shadow transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            {isSubmitting ? 'Sending...' : 'Send'}
+            Send
           </button>
         </form>
       </div>
