@@ -18,7 +18,7 @@ export default function HeroSection() {
           placeholder="blur"
           blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMzAwJyBoZWlnaHQ9JzIwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjMDA2MTQzJy8+PC9zdmc+"
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-forest/70 via-forest/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-forest/80 via-forest/55 to-forest/20" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-24 text-center sm:px-10">
@@ -43,11 +43,11 @@ export default function HeroSection() {
           </span>
         </div>
 
-        <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-semibold leading-tight text-white drop-shadow-sm sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-semibold leading-tight text-white drop-shadow-sm text-shadow-sm sm:text-5xl md:text-6xl lg:text-7xl">
           Boutique Airbnb management rooted in warm Pacific Northwest hospitality.
         </h1>
 
-        <p className="mx-auto mb-4 max-w-3xl text-lg text-white/80 sm:text-xl">
+        <p className="mx-auto mb-4 max-w-3xl text-lg text-white/80 text-shadow-sm sm:text-xl">
           Thoughtful guest care, local expertise, and steady returns for homeowners who want a partner they can trust.
         </p>
         <p className="mx-auto mb-12 max-w-2xl text-base uppercase tracking-[0.2em] text-white/70">
