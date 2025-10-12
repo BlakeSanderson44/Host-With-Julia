@@ -27,6 +27,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'host-with-julia.vercel.app',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
