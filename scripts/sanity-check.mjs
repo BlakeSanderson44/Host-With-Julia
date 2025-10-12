@@ -18,7 +18,8 @@ function walk(dir) {
 
     const content = fs.readFileSync(fullPath, 'utf8');
     const attrRegex = /className\s*=\s*(\{?)\s*(["'`])([^"'`]*?)\2\s*(\}?)/g;
-    let match;
+    /** @type {RegExpExecArray | null} */
+    let match = null;
     while ((match = attrRegex.exec(content)) !== null) {
       const [, openBrace, , literal] = match;
       const hasClosingBrace = Boolean(match[4]);
