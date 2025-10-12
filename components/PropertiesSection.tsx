@@ -71,7 +71,8 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
         let bestEntry: { index: number; ratio: number } | null = null;
 
         entries.forEach((entry) => {
-          const index = Number((entry.target as HTMLElement).dataset.cardIndex ?? 0);
+          const el = entry.target as HTMLElement;
+          const index = Number(el.dataset['cardIndex'] ?? 0);
           if (!bestEntry || entry.intersectionRatio > bestEntry.ratio) {
             bestEntry = { index, ratio: entry.intersectionRatio };
           }
