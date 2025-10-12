@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   useCallback,
@@ -7,6 +7,7 @@ import {
   useState,
   type MouseEvent,
 } from 'react';
+import { usePathname } from 'next/navigation';
 
 export interface NavItem {
   href: string;
@@ -22,6 +23,8 @@ export default function Header({ navItems }: HeaderProps) {
   const toggleRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const wasOpenRef = useRef(open);
+  const pathname = usePathname() ?? '/';
+  const [activeHash, setActiveHash] = useState('');
 
   const close = useCallback(() => setOpen(false), []);
   const handleToggle = useCallback(() => {
@@ -74,12 +77,37 @@ export default function Header({ navItems }: HeaderProps) {
       return undefined;
     }
 
-    const handleHashChange = () => close();
+    setActiveHash(window.location.hash || '');
+
+    const handleHashChange = () => {
+      setActiveHash(window.location.hash || '');
+      close();
+    };
+
     window.addEventListener('hashchange', handleHashChange);
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, [close]);
+
+  const isNavItemActive = useCallback(
+    (href: string) => {
+      if (href.startsWith('#')) {
+        if (activeHash) {
+          return activeHash === href;
+        }
+
+        return pathname === '/' && href === '#how';
+      }
+
+      const normalizedHref = href !== '/' && href.endsWith('/') ? href.slice(0, -1) : href;
+      const normalizedPathname =
+        pathname !== '/' && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+      return normalizedPathname === normalizedHref;
+    },
+    [activeHash, pathname],
+  );
 
   const handleBackdropClick = useCallback(() => {
     close();
@@ -95,14 +123,21 @@ export default function Header({ navItems }: HeaderProps) {
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur border-b border-sand">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between p-4">
+      <nav
+        aria-label="Primary navigation"
+        className="max-w-6xl mx-auto flex items-center justify-between p-4"
+      >
         <a href="#" className="font-bold text-forest">
           Host With Julia
         </a>
         <ul className="hidden md:flex gap-6">
           {navItems.map((item) => (
             <li key={item.href}>
-              <a href={item.href} className="text-charcoal hover:text-lake">
+              <a
+                href={item.href}
+                className="text-charcoal hover:text-lake rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60"
+                aria-current={isNavItemActive(item.href) ? 'page' : undefined}
+              >
                 {item.label}
               </a>
             </li>
@@ -137,7 +172,8 @@ export default function Header({ navItems }: HeaderProps) {
                 <li key={item.href}>
                   <a
                     href={item.href}
-                    className="text-charcoal hover:text-lake block py-2"
+                    className="text-charcoal hover:text-lake block py-2 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60"
+                    aria-current={isNavItemActive(item.href) ? 'page' : undefined}
                     onClick={handleNavLinkClick}
                   >
                     {item.label}
