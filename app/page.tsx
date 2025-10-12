@@ -166,9 +166,24 @@ const howItWorksSteps = [
 ];
 
 const locations = [
-  { name: 'Edmonds', description: 'Urban coastal stays with quick Seattle access.' },
-  { name: 'Chelan', description: 'Lake country specialists for seasonal demand.' },
-  { name: 'Ashford (Mt. Rainier)', description: 'Cabins at the gateway to Mt. Rainier.' },
+  {
+    name: 'Edmonds',
+    image: '/images/edmonds-retreat.avif',
+    blurb: 'Coastal charm just north of Seattle—family-friendly stays with easy ferry access.',
+    highlights: ['Walkable waterfront', 'Ferry + downtown dining', 'Quick Seattle access'],
+  },
+  {
+    name: 'Chelan',
+    image: '/images/3-bed-chelan-condo.avif',
+    blurb: 'Lakefront relaxation and four-season fun—high-demand summers, cozy winters.',
+    highlights: ['Lakefront appeal', 'Winery tours', 'Summer festivals'],
+  },
+  {
+    name: 'Ashford (Mt. Rainier)',
+    image: '/images/echo-house.avif',
+    blurb: 'Gateway to Mount Rainier—cabins and adventure-ready basecamps.',
+    highlights: ['Mt. Rainier access', 'Trailheads nearby', 'Cozy cabin vibes'],
+  },
 ];
 
 const properties: PropertyItem[] = [
