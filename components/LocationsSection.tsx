@@ -50,7 +50,7 @@ export default function LocationsSection({ locations }: LocationsSectionProps) {
             Locations
           </h2>
           <p className="mt-3 text-slate">
-            Western Washington expertise with a focus on guest delight and strong owner returns.
+            Based in Western Washington — proudly serving homeowners across the state, from the Puget Sound region to Lake Chelan and other parts of Central Washington.
           </p>
         </header>
 
