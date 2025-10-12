@@ -104,6 +104,10 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
   }, [properties]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const carousel = carouselRef.current;
     if (!carousel) {
       return;
