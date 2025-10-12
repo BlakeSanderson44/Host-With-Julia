@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { defaultSizes, requireAlt } from '@/lib/image';
 import Button from './Button';
 
-const HERO_IMAGE_SRC = process.env['NEXT_PUBLIC_HERO_IMAGE'] ?? '/images/echo-house.avif';
+const HERO_IMAGE_SRC = process.env.NEXT_PUBLIC_HERO_IMAGE ?? '/images/echo-house.avif';
 
 export default function HeroSection() {
   return (
