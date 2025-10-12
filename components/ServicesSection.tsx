@@ -124,13 +124,6 @@ export default function ServicesSection({ className }: ServicesSectionProps) {
                   <p className="text-sm text-slate">Standalone site for brand control and OTA independence.</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <PlusIcon />
-                <div>
-                  <strong className="text-charcoal">In-person welcome &amp; concierge</strong>
-                  <p className="text-sm text-slate">Personal check-in, special-occasion setups and local coordination.</p>
-                </div>
-              </li>
             </ul>
           </article>
         </div>
@@ -147,7 +140,6 @@ export default function ServicesSection({ className }: ServicesSectionProps) {
               ['Digital guidebook creation', false],
               ['Professional staging & design', false],
               ['Direct booking website', false],
-              ['In-person welcome & concierge', false],
             ].map(([label, included]) => (
               <li key={String(label)} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm text-charcoal">{label}</span>
@@ -192,7 +184,6 @@ export default function ServicesSection({ className }: ServicesSectionProps) {
                   ['Digital guidebook creation', false, true],
                   ['Professional staging & design', false, true],
                   ['Direct booking website', false, true],
-                  ['In-person welcome & concierge', false, true],
                 ].map(([label, core, addon]) => (
                   <tr key={String(label)}>
                     <th scope="row" className="px-4 py-3 font-medium text-charcoal">
