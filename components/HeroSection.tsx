@@ -1,22 +1,26 @@
 import Image from 'next/image';
-import { defaultSizes, requireAlt } from '@/lib/image';
+import { requireAlt } from '@/lib/image';
 import Button from './Button';
 
-const HERO_IMAGE_SRC = process.env.NEXT_PUBLIC_HERO_IMAGE ?? '/images/echo-house.avif';
+const HERO_IMAGE_SRC = process.env['NEXT_PUBLIC_HERO_IMAGE'] ?? '/images/echo-house.avif';
+const HERO_HEADING_ID = 'hero-heading';
 
 export default function HeroSection() {
   return (
-    <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-forest text-white">
+    <section
+      className="relative isolate flex min-h-screen items-center overflow-hidden bg-forest text-white"
+      aria-labelledby={HERO_HEADING_ID}
+    >
       <div className="absolute inset-0">
         <Image
           src={HERO_IMAGE_SRC}
           alt={requireAlt('Echo House living room with warm natural wood and a stone fireplace')}
           fill
-          sizes={defaultSizes}
+          sizes="100vw"
           className="object-cover"
           priority
           placeholder="blur"
-          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMzAwJyBoZWlnaHQ9JzIwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjMDA2MTQzJy8+PC9zdmc+"
+          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwMCcgaGVpZ2h0PSc1NjAnIHZpZXdCb3g9JzAgMCAxMDAwIDU2MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmFkaWFsR3JhZGllbnQgaWQ9J2EnIGN4PSczMDAnIGN5PScyNzAnIHI9JzkwMCcgZ3JhZGllbnRUcmFuc2Zvcm09J3JvdGF0ZSg5MCknPjxzdG9wIG9mZnNldD0nMCUnIGZpbGw9JyMwMzA1MTQnLz48c3RvcCBvZmZzZXQ9JzUwJScgZmlsbD0nIzRhNjI0NycvPjxzdG9wIG9mZnNldD0nMTAwJScgZmlsbD0nI2Q5YWRhNCcvPjwvcmFkaWFsR3JhZGllbnQ+PHJlY3Qgd2lkdGg9JzEwMDAnIGhlaWdodD0nNTYwJyBmaWxsPSd1cmwoI2EpJy8+PC9zdmc+"
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-forest/80 via-forest/55 to-forest/20" />
       </div>
@@ -43,7 +47,10 @@ export default function HeroSection() {
           </span>
         </div>
 
-        <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-semibold leading-tight text-white drop-shadow-sm text-shadow-sm sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1
+          id={HERO_HEADING_ID}
+          className="mx-auto mb-6 max-w-4xl text-4xl font-semibold leading-tight text-white drop-shadow-sm text-shadow-sm sm:text-5xl md:text-6xl lg:text-7xl"
+        >
           Boutique Airbnb management rooted in warm Pacific Northwest hospitality.
         </h1>
 
