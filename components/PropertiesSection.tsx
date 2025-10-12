@@ -68,9 +68,10 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
 
     const getCardIndex = (target: Element): number => {
       const element = target as HTMLElement;
-      const fromDataset = element.dataset['cardIndex'];
-      const fromAttribute = element.getAttribute('data-card-index');
-      const raw = fromDataset ?? fromAttribute ?? '0';
+      const raw =
+        element.dataset['cardIndex'] ??
+        element.getAttribute('data-card-index') ??
+        '0';
       const parsed = Number(raw);
       return Number.isFinite(parsed) ? parsed : 0;
     };
