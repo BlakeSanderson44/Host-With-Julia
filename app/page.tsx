@@ -165,24 +165,6 @@ const howItWorksSteps = [
   { title: 'Reporting & Payouts', description: 'Monthly summaries and clear payouts.' },
 ];
 
-const services = [
-  {
-    icon: '🏡',
-    title: 'STR Management',
-    description: 'Dynamic pricing, pro listings, and 24/7 guest messaging — full service, no stress.',
-  },
-  {
-    icon: '📱',
-    title: 'Touch Stay Guidebooks',
-    description: 'Digital guidebooks with rules, tips, and arrival info to delight guests.',
-  },
-  {
-    icon: '🕵️',
-    title: 'Consulting & Optimization',
-    description: '60–90 min audit with a custom action plan in 48 hours.',
-  },
-];
-
 const locations = [
   { name: 'Edmonds', description: 'Urban coastal stays with quick Seattle access.' },
   { name: 'Chelan', description: 'Lake country specialists for seasonal demand.' },
@@ -258,7 +240,7 @@ export default function Home() {
       <main id="main" className="pt-16">
         <HeroSection />
         <HowItWorksSection steps={howItWorksSteps} />
-        <ServicesSection services={services} />
+        <ServicesSection />
         <LocationsSection locations={locations} />
         <PropertiesSection properties={properties} />
         <AboutSection {...aboutSectionContent} />
