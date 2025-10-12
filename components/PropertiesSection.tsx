@@ -66,13 +66,21 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
       return;
     }
 
+    const getCardIndex = (target: Element): number => {
+      const element = target as HTMLElement;
+      const fromDataset = element.dataset['cardIndex'];
+      const fromAttribute = element.getAttribute('data-card-index');
+      const raw = fromDataset ?? fromAttribute ?? '0';
+      const parsed = Number(raw);
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         let bestEntry: { index: number; ratio: number } | null = null;
 
         entries.forEach((entry) => {
-          const el = entry.target as HTMLElement;
-          const index = Number(el.dataset['cardIndex'] ?? 0);
+          const index = getCardIndex(entry.target);
           if (!bestEntry || entry.intersectionRatio > bestEntry.ratio) {
             bestEntry = { index, ratio: entry.intersectionRatio };
           }
