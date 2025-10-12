@@ -76,16 +76,19 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
       return Number.isFinite(parsed) ? parsed : 0;
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let bestEntry: { index: number; ratio: number } | null = null;
+    type BestEntry = { index: number; ratio: number };
 
-        entries.forEach((entry) => {
+    const observer = new IntersectionObserver(
+      (entries: IntersectionObserverEntry[]) => {
+        let bestEntry: BestEntry | null = null;
+
+        for (const entry of entries) {
           const index = getCardIndex(entry.target);
-          if (!bestEntry || entry.intersectionRatio > bestEntry.ratio) {
-            bestEntry = { index, ratio: entry.intersectionRatio };
+          const ratio = entry.intersectionRatio || 0;
+          if (bestEntry === null || ratio > bestEntry.ratio) {
+            bestEntry = { index, ratio };
           }
-        });
+        }
 
         if (bestEntry && bestEntry.ratio > 0) {
           const nextIndex = bestEntry.index;
