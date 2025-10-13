@@ -1,28 +1,22 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
+import { LOCATIONS } from "@/data/locations";
 
-import { LOCATIONS } from '@/data/locations';
-
+// Safely prefix basePath if your app deploys under a subpath (e.g., /host-with-julia)
 const withBasePath = (p: string) => {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-  return `${basePath}${p}`;
+  const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
+  return `${base}${p}`;
 };
 
 export default function LocationGrid() {
   return (
-    <section
-      id="locations"
-      aria-labelledby="locations-heading"
-      className="mx-auto max-w-6xl px-4 py-12"
-    >
+    <section aria-labelledby="locations-heading" className="mx-auto max-w-6xl px-4 py-12">
       <header className="mb-8">
-        <h2 id="locations-heading" className="text-3xl font-semibold tracking-tight">
-          Where We Operate
-        </h2>
+        <h2 id="locations-heading" className="text-3xl font-semibold tracking-tight">Where We Operate</h2>
         <p className="mt-3 text-slate-600">
-          Based in Western Washington — proudly serving homeowners across the state and open to
-          projects in other regions by request.
+          Based in Western Washington — proudly serving homeowners across the state
+          and open to projects in other regions by request.
         </p>
       </header>
 
@@ -30,9 +24,10 @@ export default function LocationGrid() {
         {LOCATIONS.map((loc) => (
           <article
             key={loc.slug}
-            className="group overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 transition hover:shadow-lg"
+            className="group overflow-hidden rounded-2xl shadow-md ring-1 ring-black/5 transition hover:shadow-lg bg-white"
           >
             <div className="relative aspect-[4/3]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={withBasePath(loc.imageSrc)}
                 alt={loc.alt}
