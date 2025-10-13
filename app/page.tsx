@@ -165,27 +165,6 @@ const howItWorksSteps = [
   { title: 'Reporting & Payouts', description: 'Monthly summaries and clear payouts.' },
 ];
 
-const locations = [
-  {
-    name: 'Edmonds',
-    image: '/images/edmonds-retreat.avif',
-    blurb: 'Coastal charm just north of Seattle—family-friendly stays with easy ferry access.',
-    highlights: ['Walkable waterfront', 'Ferry + downtown dining', 'Quick Seattle access'],
-  },
-  {
-    name: 'Chelan',
-    image: '/images/3-bed-chelan-condo.avif',
-    blurb: 'Lakefront relaxation and four-season fun—high-demand summers, cozy winters.',
-    highlights: ['Lakefront appeal', 'Winery tours', 'Summer festivals'],
-  },
-  {
-    name: 'Ashford (Mt. Rainier)',
-    image: '/images/echo-house.avif',
-    blurb: 'Gateway to Mount Rainier—cabins and adventure-ready basecamps.',
-    highlights: ['Mt. Rainier access', 'Trailheads nearby', 'Cozy cabin vibes'],
-  },
-];
-
 const properties: PropertyItem[] = [
   {
     id: 'echo-house',
@@ -238,6 +217,47 @@ const properties: PropertyItem[] = [
     airbnbUrl: 'https://www.airbnb.com/rooms/791580934465838010',
   },
 ];
+
+const propertyImageById = properties.reduce<Record<string, string>>(
+  (acc, property) => {
+    acc[property.id] = property.image;
+    return acc;
+  },
+  {},
+);
+
+type LocationConfig = {
+  name: string;
+  blurb: string;
+  highlights: string[];
+  photoId: PropertyItem['id'];
+};
+
+const locationConfigs: LocationConfig[] = [
+  {
+    name: 'Edmonds',
+    photoId: 'edmonds-retreat',
+    blurb: 'Coastal charm just north of Seattle—family-friendly stays with easy ferry access.',
+    highlights: ['Walkable waterfront', 'Ferry + downtown dining', 'Quick Seattle access'],
+  },
+  {
+    name: 'Chelan',
+    photoId: '3-bed-chelan',
+    blurb: 'Lakefront relaxation and four-season fun—high-demand summers, cozy winters.',
+    highlights: ['Lakefront appeal', 'Winery tours', 'Summer festivals'],
+  },
+  {
+    name: 'Ashford (Mt. Rainier)',
+    photoId: 'echo-house',
+    blurb: 'Gateway to Mount Rainier—cabins and adventure-ready basecamps.',
+    highlights: ['Mt. Rainier access', 'Trailheads nearby', 'Cozy cabin vibes'],
+  },
+];
+
+const locations = locationConfigs.map(({ photoId, ...location }) => ({
+  ...location,
+  image: propertyImageById[photoId] ?? '',
+}));
 
 const testimonials = [
   {
