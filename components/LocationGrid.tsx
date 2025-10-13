@@ -1,22 +1,24 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { LOCATIONS } from "@/data/locations";
+import Image from 'next/image';
+import Link from 'next/link';
 
-// Safely prefix basePath if your app deploys under a subpath (e.g., /host-with-julia)
-const withBasePath = (p: string) => {
-  const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
-  return `${base}${p}`;
-};
+import { LOCATIONS } from '@/data/locations';
 
 export default function LocationGrid() {
   return (
-    <section aria-labelledby="locations-heading" className="mx-auto max-w-6xl px-4 py-12">
+    <section
+      id="locations"
+      aria-labelledby="locations-heading"
+      className="mx-auto max-w-6xl px-4 py-12"
+    >
       <header className="mb-8">
-        <h2 id="locations-heading" className="text-3xl font-semibold tracking-tight">Where We Operate</h2>
+        <h2 id="locations-heading" className="text-3xl font-semibold tracking-tight">
+          Where We Operate
+        </h2>
         <p className="mt-3 text-slate-600">
-          Based in Western Washington — proudly serving homeowners across the state
-          and open to projects in other regions by request.
+          Based in Western Washington — proudly serving homeowners across the state and open to
+          projects in other regions by request.
         </p>
       </header>
 
@@ -24,15 +26,16 @@ export default function LocationGrid() {
         {LOCATIONS.map((loc) => (
           <article
             key={loc.slug}
-            className="group overflow-hidden rounded-2xl shadow-md ring-1 ring-black/5 transition hover:shadow-lg bg-white"
+            className="group overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 transition hover:shadow-lg"
           >
             <div className="relative aspect-[4/3]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={withBasePath(loc.imageSrc)}
+              <Image
+                src={loc.imageSrc}
                 alt={loc.alt}
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
+                priority={loc.slug === 'mt-rainier'}
               />
             </div>
             <div className="p-5">
