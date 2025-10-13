@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import Header, { type NavItem } from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
-import LocationsSection from '@/components/LocationsSection';
+import LocationGrid from '@/components/LocationGrid';
 import ServicesSection from '@/components/ServicesSection';
 import SiteFooter from '@/components/SiteFooter';
 import StickyCTA from '@/components/StickyCTA';
@@ -218,47 +218,6 @@ const properties: PropertyItem[] = [
   },
 ];
 
-const propertyImageById = properties.reduce<Record<string, string>>(
-  (acc, property) => {
-    acc[property.id] = property.image;
-    return acc;
-  },
-  {},
-);
-
-type LocationConfig = {
-  name: string;
-  blurb: string;
-  highlights: string[];
-  photoId: PropertyItem['id'];
-};
-
-const locationConfigs: LocationConfig[] = [
-  {
-    name: 'Edmonds',
-    photoId: 'edmonds-retreat',
-    blurb: 'Coastal charm just north of Seattle—family-friendly stays with easy ferry access.',
-    highlights: ['Walkable waterfront', 'Ferry + downtown dining', 'Quick Seattle access'],
-  },
-  {
-    name: 'Chelan',
-    photoId: '3-bed-chelan',
-    blurb: 'Lakefront relaxation and four-season fun—high-demand summers, cozy winters.',
-    highlights: ['Lakefront appeal', 'Winery tours', 'Summer festivals'],
-  },
-  {
-    name: 'Ashford (Mt. Rainier)',
-    photoId: 'echo-house',
-    blurb: 'Gateway to Mount Rainier—cabins and adventure-ready basecamps.',
-    highlights: ['Mt. Rainier access', 'Trailheads nearby', 'Cozy cabin vibes'],
-  },
-];
-
-const locations = locationConfigs.map(({ photoId, ...location }) => ({
-  ...location,
-  image: propertyImageById[photoId] ?? '',
-}));
-
 const testimonials = [
   {
     id: 'testimonial-1',
@@ -276,7 +235,7 @@ export default function Home() {
         <HeroSection />
         <HowItWorksSection steps={howItWorksSteps} />
         <ServicesSection />
-        <LocationsSection locations={locations} />
+        <LocationGrid />
         <PropertiesSection properties={properties} />
         <AboutSection {...aboutSectionContent} />
         <div className="mb-24 md:mb-0">
