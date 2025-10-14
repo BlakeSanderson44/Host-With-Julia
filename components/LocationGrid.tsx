@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { LOCATIONS } from '@/data/locations';
@@ -28,14 +27,13 @@ export default function LocationGrid() {
             key={loc.slug}
             className="group overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 transition hover:shadow-lg"
           >
-            <div className="relative aspect-[4/3]">
-              <Image
+            <div className="relative aspect-[4/3] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={loc.imageSrc}
                 alt={loc.alt}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
-                priority={loc.slug === 'mt-rainier'}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             </div>
             <div className="p-5">
