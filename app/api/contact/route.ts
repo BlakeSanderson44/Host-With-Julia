@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server';
 import { contactFormSchema, validateSchema } from './validation';
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -54,12 +53,23 @@ function isRateLimited(identifier: string) {
   return false;
 }
 
+type JsonInit = ResponseInit & { headers?: HeadersInit };
+
+function jsonResponse(body: unknown, init: JsonInit = {}) {
+  const headers = new Headers(init.headers);
+  if (!headers.has('content-type')) {
+    headers.set('content-type', 'application/json; charset=utf-8');
+  }
+
+  return new Response(JSON.stringify(body), { ...init, headers });
+}
+
 export async function POST(request: Request) {
   try {
     const clientIdentifier = getClientIdentifier(request);
 
     if (isRateLimited(clientIdentifier)) {
-      return NextResponse.json(
+      return jsonResponse(
         {
           success: false,
           message: 'Too many submissions. Please wait a minute and try again.',
@@ -75,7 +85,7 @@ export async function POST(request: Request) {
 
     const honeypotValue = data.get('company');
     if (typeof honeypotValue === 'string' && honeypotValue.trim().length > 0) {
-      return NextResponse.json({
+      return jsonResponse({
         success: true,
         message: 'Thank you for your message! Julia will get back to you within 1 hour.',
       });
@@ -91,7 +101,7 @@ export async function POST(request: Request) {
     const validationResult = validateSchema(contactFormSchema, rawValues);
 
     if (!validationResult.success) {
-      return NextResponse.json(
+      return jsonResponse(
         {
           success: false,
           message: 'Please correct the errors below.',
@@ -101,13 +111,13 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({
+    return jsonResponse({
       success: true,
       message: 'Thank you for your message! Julia will get back to you within 1 hour.',
     });
   } catch (error) {
     console.error('Contact form error:', error);
-    return NextResponse.json(
+    return jsonResponse(
       { success: false, message: 'Something went wrong. Please try again.' },
       { status: 500 }
     );
