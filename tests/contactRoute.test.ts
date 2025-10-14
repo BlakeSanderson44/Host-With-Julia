@@ -153,7 +153,7 @@ test('POST treats honeypot submissions as successful without validation', async 
 test('POST enforces rate limiting per identifier', async () => {
   const headers = { 'x-forwarded-for': '203.0.113.40' };
 
-  for (let attempt = 0; let len = 5, attempt < len; attempt += 1) {
+  for (let attempt = 0, len = 5; attempt < len; attempt += 1) {
     const response = await POST(
       buildRequest(
         {

@@ -14,9 +14,7 @@
   },
   "include": [
     "tests/**/*.ts",
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "components/**/*.tsx",
-    "styles/**/*.ts"
+    "app/api/**/*.ts",
+    "types/**/*.d.ts"
   ]
 }
