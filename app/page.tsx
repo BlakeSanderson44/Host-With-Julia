@@ -86,7 +86,7 @@ const TestimonialsSection = dynamic(() => import('@/components/TestimonialsSecti
   loading: () => (
     <div className="py-16 sm:py-24 text-center text-slate">Loading testimonials…</div>
   ),
-  ssr: true,
+  ssr: false,
 });
 
 const ContactSection = dynamic(() => import('@/components/ContactSection'), {
@@ -100,7 +100,7 @@ const navItems: NavItem[] = [
   { href: '#locations', label: 'Locations' },
   { href: '#properties', label: 'Properties' },
   { href: '#about', label: 'Why Me' },
-  { href: '#faqs', label: 'Testimonials' },
+  { href: '#testimonials', label: 'Testimonials' },
   { href: '#contact', label: 'Contact' },
 ];
 
@@ -218,15 +218,6 @@ const properties: PropertyItem[] = [
   },
 ];
 
-const testimonials = [
-  {
-    id: 'testimonial-1',
-    quote: '“Julia keeps our rental booked and stress-free. Best decision we made.”',
-  },
-  { id: 'testimonial-2', quote: '“Professional, responsive, and worth every penny.”' },
-  { id: 'testimonial-3', quote: '“Our cabin stays booked and stress-free.”' },
-];
-
 export default function Home() {
   return (
     <>
@@ -239,7 +230,7 @@ export default function Home() {
         <PropertiesSection properties={properties} />
         <AboutSection {...aboutSectionContent} />
         <div className="mb-24 md:mb-0">
-          <TestimonialsSection testimonials={testimonials} />
+          <TestimonialsSection />
         </div>
         <ContactSection />
         <StickyCTA />
