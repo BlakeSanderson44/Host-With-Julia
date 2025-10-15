@@ -287,12 +287,17 @@ export default function ContactSection() {
                 id="preferred-time"
                 name="preferredTime"
                 value={form.preferredTime ?? ""}
-                onChange={(event) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    preferredTime: (event.target.value || undefined) as PreferredTime | undefined,
-                  }))
-                }
+                onChange={(event) => {
+                  const value = event.target.value as PreferredTime | "";
+                  setForm((prev) => {
+                    if (!value) {
+                      const next = { ...prev };
+                      delete next.preferredTime;
+                      return next;
+                    }
+                    return { ...prev, preferredTime: value };
+                  });
+                }}
                 className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
               >
                 <option value="">No preference</option>
@@ -416,9 +421,17 @@ export default function ContactSection() {
               type="date"
               name="desiredStartDate"
               value={form.desiredStartDate ?? ""}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, desiredStartDate: event.target.value || undefined }))
-              }
+              onChange={(event) => {
+                const value = event.target.value;
+                setForm((prev) => {
+                  if (!value) {
+                    const next = { ...prev };
+                    delete next.desiredStartDate;
+                    return next;
+                  }
+                  return { ...prev, desiredStartDate: value };
+                });
+              }}
               className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest sm:max-w-xs"
             />
           </div>
