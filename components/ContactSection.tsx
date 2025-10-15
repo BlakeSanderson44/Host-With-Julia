@@ -60,16 +60,13 @@ export default function ContactSection() {
     email: "",
     phone: "",
     preferredMethod: "Email",
-    preferredTime: undefined,
     propertyAddresses: "",
     currentlyListed: "No",
     listedLinks: "",
     services: [],
-    desiredStartDate: undefined,
     message: "",
     agree: false,
     company: "",
-    startedAt: undefined,
   });
   const [submitting, setSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
