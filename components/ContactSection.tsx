@@ -1,221 +1,508 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from "react";
 
-type ContactValues = {
+type PreferredMethod = "Email" | "Phone" | "Text";
+type PreferredTime = "Morning" | "Afternoon" | "Evening";
+type ListedWhere = "No" | "Yes – Airbnb" | "Yes – VRBO" | "Yes – Direct Site" | "Other";
+
+type FormState = {
   name: string;
   email: string;
-  city: string;
+  phone?: string;
+  preferredMethod: PreferredMethod;
+  preferredTime?: PreferredTime;
+  propertyAddresses: string;
+  currentlyListed: ListedWhere;
+  listedLinks?: string;
+  services: string[];
+  desiredStartDate?: string;
   message: string;
+  agree: boolean;
+  company?: string;
+  startedAt?: number;
 };
 
-type FieldErrors = Partial<Record<keyof ContactValues, string>>;
+const SERVICE_OPTIONS = [
+  "Full-service Hosting",
+  "Setup Only",
+  "Staging & Design",
+  "Digital Guidebook",
+  "Direct Booking Website",
+  "Pricing Optimization",
+] as const;
 
-type Status = 'idle' | 'success' | 'error';
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const initialValues: ContactValues = {
-  name: '',
-  email: '',
-  city: '',
-  message: '',
-};
+function normalizeUrls(raw?: string): string[] {
+  if (!raw) return [];
+  return raw
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((value) => {
+      if (/^https?:\/\//i.test(value)) return value;
+      return `https://${value}`;
+    });
+}
+
+function splitLines(raw?: string): string[] {
+  if (!raw) return [];
+  return raw
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
 
 export default function ContactSection() {
-  const [values, setValues] = useState<ContactValues>(initialValues);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [status, setStatus] = useState<Status>('idle');
-  const alertRef = useRef<HTMLDivElement | null>(null);
+  const [form, setForm] = useState<FormState>({
+    name: "",
+    email: "",
+    phone: "",
+    preferredMethod: "Email",
+    preferredTime: undefined,
+    propertyAddresses: "",
+    currentlyListed: "No",
+    listedLinks: "",
+    services: [],
+    desiredStartDate: undefined,
+    message: "",
+    agree: false,
+    company: "",
+    startedAt: undefined,
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const startedRef = useRef(false);
+  const messageLimit = 1000;
 
-  const inputClasses = (hasError: boolean) =>
-    `w-full border border-forest p-3 rounded focus:ring-2 focus:ring-lake focus:border-transparent ${
-      hasError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
-    }`;
-
-  const setField = (field: keyof ContactValues) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setValues((previous) => ({ ...previous, [field]: event.target.value }));
-      setStatus('idle');
-      if (fieldErrors[field]) {
-        setFieldErrors((prev) => {
-          const next = { ...prev };
-          delete next[field];
-          return next;
-        });
-      }
-    };
-
-  const validate = (formValues: ContactValues): FieldErrors => {
-    const errors: FieldErrors = {};
-
-    if (!formValues.name.trim()) {
-      errors.name = 'Please enter your name.';
+  useEffect(() => {
+    if (!startedRef.current) {
+      startedRef.current = true;
+      setForm((prev) => ({ ...prev, startedAt: Date.now() }));
     }
+  }, []);
 
-    if (!formValues.email.trim()) {
-      errors.email = 'Email is required.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)) {
-      errors.email = 'Enter a valid email address.';
+  const errors = useMemo(() => {
+    const currentErrors: Partial<Record<keyof FormState, string>> = {};
+    if (!form.name.trim()) {
+      currentErrors.name = "Please enter your name.";
     }
-
-    if (!formValues.message.trim()) {
-      errors.message = 'Please add a short message.';
-    } else if (formValues.message.trim().length < 10) {
-      errors.message = 'Message should be at least 10 characters.';
+    if (!EMAIL_PATTERN.test(form.email.trim())) {
+      currentErrors.email = "Enter a valid email.";
     }
+    if (!form.propertyAddresses.trim()) {
+      currentErrors.propertyAddresses = "Please provide at least one address (one per line).";
+    }
+    if (form.currentlyListed !== "No" && !form.listedLinks?.trim()) {
+      currentErrors.listedLinks = "Please include listing link(s).";
+    }
+    if (form.services.length === 0) {
+      currentErrors.services = "Select at least one service.";
+    }
+    if (!form.message.trim()) {
+      currentErrors.message = "A short message helps us tailor our reply.";
+    }
+    if (!form.agree) {
+      currentErrors.agree = "Please accept to be contacted about your inquiry.";
+    }
+    return currentErrors;
+  }, [form]);
 
-    return errors;
-  };
+  const canSubmit = Object.keys(errors).length === 0;
+  const messageCount = form.message.length;
 
-  const focusAlert = () => {
-    requestAnimationFrame(() => {
-      alertRef.current?.focus();
-    });
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!canSubmit) return;
 
-    const errors = validate(values);
-    setFieldErrors(errors);
+    const secondsElapsed =
+      form.startedAt && typeof form.startedAt === "number" ? (Date.now() - form.startedAt) / 1000 : 0;
+    const looksSpam = (form.company && form.company.length > 0) || secondsElapsed < 3;
 
-    if (Object.keys(errors).length > 0) {
-      setStatus('error');
-      focusAlert();
-      return;
+    setSubmitting(true);
+
+    try {
+      const payload = {
+        ...form,
+        email: form.email.trim().toLowerCase(),
+        propertyAddressesParsed: splitLines(form.propertyAddresses),
+        listedLinksParsed: normalizeUrls(form.listedLinks),
+        looksSpam,
+        secondsElapsed,
+        meta: typeof window !== "undefined"
+          ? {
+              path: window.location.pathname,
+              hash: window.location.hash,
+              search: window.location.search,
+            }
+          : undefined,
+      };
+
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      const data = (await response.json()) as { id: string };
+      setSubmittedId(data.id);
+
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        // Optional analytics hook
+        // @ts-expect-error dataLayer is optional
+        window.dataLayer?.push({ event: "lead_submit", lead_id: data.id });
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Sorry, something went wrong. Please try again or email info@hostwithjulia.com.");
+    } finally {
+      setSubmitting(false);
     }
+  }
 
-    setStatus('success');
-    setFieldErrors({});
-    setValues(initialValues);
-    focusAlert();
-  };
+  if (submittedId) {
+    return (
+      <section id="contact" className="bg-cream py-16 sm:py-24" aria-live="polite">
+        <div className="max-w-2xl mx-auto px-6 sm:px-10 text-center">
+          <h2 className="text-3xl font-bold text-forest">Thanks — we&apos;ll be in touch shortly!</h2>
+          <p className="mt-3 text-slate-700">
+            We received your details (ref <span className="font-mono">{submittedId}</span>). Julia or a team member will
+            reach out. If it&apos;s urgent, email {" "}
+            <a className="underline" href="mailto:info@hostwithjulia.com">
+              info@hostwithjulia.com
+            </a>
+            .
+          </p>
+          <a
+            href="#top"
+            className="mt-6 inline-flex rounded-full bg-forest px-6 py-3 text-white font-semibold shadow-md hover:shadow-lg transition"
+          >
+            Back to top
+          </a>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section id="contact" className="py-20">
-      <div className="max-w-4xl mx-auto px-4 grid gap-8 md:grid-cols-2">
-        <div className="space-y-4">
-          <h2 className="text-3xl font-bold text-forest">Let&apos;s Talk</h2>
-          <p className="text-slate">Tell me about your property and I&apos;ll reach out.</p>
-          <div className="text-moss">🕒 Avg Airbnb response: under 1 hour.</div>
-        </div>
-        <div
-          ref={alertRef}
-          tabIndex={-1}
-          aria-live="polite"
-          className="sr-only"
+    <section id="contact" className="bg-cream py-16 sm:py-24">
+      <div className="max-w-6xl mx-auto px-6 sm:px-10">
+        <header className="max-w-2xl mb-8 sm:mb-10">
+          <h2 className="text-3xl font-bold text-forest">Request a free property review</h2>
+          <p className="mt-3 text-slate-600">Tell us a bit about your place and goals. ~2 minutes to complete.</p>
+        </header>
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid gap-6 rounded-2xl border border-sand bg-white p-6 sm:p-8 shadow"
+          noValidate
         >
-          {status === 'success' && 'Thank you! Your message has been sent.'}
-          {status === 'error' && 'There are errors in the form below.'}
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          {status === 'success' && (
-            <div
-              role="alert"
-              className="p-3 rounded bg-green-100 text-green-800 border border-green-300"
-            >
-              Thank you for your message!
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label htmlFor="contact-name" className="block text-sm font-medium text-charcoal">
+                Your name*
+              </label>
+              <input
+                id="contact-name"
+                name="name"
+                value={form.name}
+                onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+                required
+                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+                aria-invalid={Boolean(errors.name)}
+                aria-describedby={errors.name ? "contact-name-error" : undefined}
+              />
+              {errors.name && (
+                <p id="contact-name-error" className="mt-1 text-sm text-red-600">
+                  {errors.name}
+                </p>
+              )}
             </div>
-          )}
-          <div className="space-y-1">
-            <label htmlFor="contact-name" className="block text-sm font-medium text-forest">
-              Name
+            <div>
+              <label htmlFor="contact-email" className="block text-sm font-medium text-charcoal">
+                Email*
+              </label>
+              <input
+                id="contact-email"
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+                required
+                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+                aria-invalid={Boolean(errors.email)}
+                aria-describedby={errors.email ? "contact-email-error" : undefined}
+              />
+              {errors.email && (
+                <p id="contact-email-error" className="mt-1 text-sm text-red-600">
+                  {errors.email}
+                </p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="contact-phone" className="block text-sm font-medium text-charcoal">
+                Phone (optional)
+              </label>
+              <input
+                id="contact-phone"
+                name="phone"
+                inputMode="tel"
+                value={form.phone ?? ""}
+                onChange={(event) => setForm((prev) => ({ ...prev, phone: event.target.value }))}
+                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <fieldset className="sm:col-span-2">
+              <legend className="block text-sm font-medium text-charcoal">Preferred contact method*</legend>
+              <div className="mt-2 flex flex-wrap gap-4">
+                {(["Email", "Phone", "Text"] as PreferredMethod[]).map((method) => (
+                  <label key={method} className="inline-flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="preferredMethod"
+                      value={method}
+                      checked={form.preferredMethod === method}
+                      onChange={() => setForm((prev) => ({ ...prev, preferredMethod: method }))}
+                      className="h-4 w-4 border-sand text-forest focus:ring-forest"
+                      required
+                    />
+                    <span className="text-sm text-charcoal">{method}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <div>
+              <label htmlFor="preferred-time" className="block text-sm font-medium text-charcoal">
+                Preferred contact time (optional)
+              </label>
+              <select
+                id="preferred-time"
+                name="preferredTime"
+                value={form.preferredTime ?? ""}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    preferredTime: (event.target.value || undefined) as PreferredTime | undefined,
+                  }))
+                }
+                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+              >
+                <option value="">No preference</option>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="property-addresses" className="block text-sm font-medium text-charcoal">
+              Property address(es)* <span className="font-normal text-slate-500">(one per line)</span>
             </label>
-            <input
-              id="contact-name"
+            <textarea
+              id="property-addresses"
+              name="propertyAddresses"
+              rows={3}
+              value={form.propertyAddresses}
+              onChange={(event) => setForm((prev) => ({ ...prev, propertyAddresses: event.target.value }))}
               required
-              name="name"
-              value={values.name}
-              onChange={setField('name')}
-              placeholder="Name"
-              className={inputClasses(Boolean(fieldErrors.name))}
-              aria-invalid={Boolean(fieldErrors.name)}
-              aria-describedby={fieldErrors.name ? 'contact-name-error' : undefined}
+              placeholder={"123 Example St, Edmonds, WA 98020\n456 Lakeview Dr, Chelan, WA 98816"}
+              className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+              aria-invalid={Boolean(errors.propertyAddresses)}
+              aria-describedby={errors.propertyAddresses ? "property-addresses-error" : undefined}
             />
-            {fieldErrors.name && (
-              <p id="contact-name-error" className="text-sm text-red-600">
-                {fieldErrors.name}
+            {errors.propertyAddresses && (
+              <p id="property-addresses-error" className="mt-1 text-sm text-red-600">
+                {errors.propertyAddresses}
               </p>
             )}
           </div>
-          <div className="space-y-1">
-            <label htmlFor="contact-email" className="block text-sm font-medium text-forest">
-              Email
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="currently-listed" className="block text-sm font-medium text-charcoal">
+                Currently listed?*
+              </label>
+              <select
+                id="currently-listed"
+                name="currentlyListed"
+                value={form.currentlyListed}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, currentlyListed: event.target.value as ListedWhere }))
+                }
+                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+              >
+                <option>No</option>
+                <option>Yes – Airbnb</option>
+                <option>Yes – VRBO</option>
+                <option>Yes – Direct Site</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="listed-links" className="block text-sm font-medium text-charcoal">
+                If listed, link(s) <span className="font-normal text-slate-500">(one per line)</span>
+              </label>
+              <textarea
+                id="listed-links"
+                name="listedLinks"
+                rows={2}
+                value={form.listedLinks ?? ""}
+                onChange={(event) => setForm((prev) => ({ ...prev, listedLinks: event.target.value }))}
+                disabled={form.currentlyListed === "No"}
+                aria-invalid={Boolean(errors.listedLinks)}
+                aria-describedby={errors.listedLinks ? "listed-links-error" : undefined}
+                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest disabled:cursor-not-allowed disabled:bg-sand/40"
+                placeholder="https://airbnb.com/rooms/12345\nhttps://www.vrbo.com/98765"
+              />
+              {errors.listedLinks && (
+                <p id="listed-links-error" className="mt-1 text-sm text-red-600">
+                  {errors.listedLinks}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <fieldset aria-describedby={errors.services ? "services-error" : undefined}>
+            <legend className="block text-sm font-medium text-charcoal">Services of interest*</legend>
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {SERVICE_OPTIONS.map((service) => {
+                const checked = form.services.includes(service);
+                return (
+                  <label key={service} className="inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="services"
+                      value={service}
+                      checked={checked}
+                      onChange={(event) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          services: event.target.checked
+                            ? prev.services.includes(service)
+                              ? prev.services
+                              : [...prev.services, service]
+                            : prev.services.filter((item) => item !== service),
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-sand text-forest focus:ring-forest"
+                    />
+                    <span className="text-sm text-charcoal">{service}</span>
+                  </label>
+                );
+              })}
+            </div>
+            {errors.services && (
+              <p id="services-error" className="mt-1 text-sm text-red-600">
+                {errors.services}
+              </p>
+            )}
+          </fieldset>
+
+          <div>
+            <label htmlFor="desired-start-date" className="block text-sm font-medium text-charcoal">
+              Desired start date (optional)
             </label>
             <input
-              id="contact-email"
-              required
-              type="email"
-              name="email"
-              value={values.email}
-              onChange={setField('email')}
-              placeholder="Email"
-              className={inputClasses(Boolean(fieldErrors.email))}
-              aria-invalid={Boolean(fieldErrors.email)}
-              aria-describedby={fieldErrors.email ? 'contact-email-error' : undefined}
+              id="desired-start-date"
+              type="date"
+              name="desiredStartDate"
+              value={form.desiredStartDate ?? ""}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, desiredStartDate: event.target.value || undefined }))
+              }
+              className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest sm:max-w-xs"
             />
-            {fieldErrors.email && (
-              <p id="contact-email-error" className="text-sm text-red-600">
-                {fieldErrors.email}
-              </p>
-            )}
           </div>
-          <div className="space-y-1">
-            <label htmlFor="contact-city" className="block text-sm font-medium text-forest">
-              Property City or Area
-            </label>
-            <input
-              id="contact-city"
-              name="city"
-              value={values.city}
-              onChange={setField('city')}
-              placeholder="Property City/Area"
-              className={inputClasses(Boolean(fieldErrors.city))}
-              aria-invalid={Boolean(fieldErrors.city)}
-              aria-describedby={fieldErrors.city ? 'contact-city-error' : undefined}
-            />
-            {fieldErrors.city && (
-              <p id="contact-city-error" className="text-sm text-red-600">
-                {fieldErrors.city}
-              </p>
-            )}
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="contact-message" className="block text-sm font-medium text-forest">
-              Message
+
+          <div>
+            <label htmlFor="contact-message" className="block text-sm font-medium text-charcoal">
+              Tell us about your property or goals*
             </label>
             <textarea
               id="contact-message"
               name="message"
-              value={values.message}
-              onChange={setField('message')}
-              placeholder="Message"
-              rows={4}
-              className={inputClasses(Boolean(fieldErrors.message))}
-              aria-invalid={Boolean(fieldErrors.message)}
-              aria-describedby={fieldErrors.message ? 'contact-message-error' : undefined}
+              rows={5}
+              maxLength={messageLimit}
+              value={form.message}
+              onChange={(event) => setForm((prev) => ({ ...prev, message: event.target.value }))}
+              required
+              className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+              aria-invalid={Boolean(errors.message)}
+              aria-describedby={errors.message ? "contact-message-error" : "message-counter"}
             />
-            {fieldErrors.message && (
-              <p id="contact-message-error" className="text-sm text-red-600">
-                {fieldErrors.message}
+            <div className="mt-1 flex items-center justify-between">
+              {errors.message ? (
+                <p id="contact-message-error" className="text-sm text-red-600">
+                  {errors.message}
+                </p>
+              ) : (
+                <span id="message-counter" className="text-xs text-slate-500">
+                  {messageCount}/{messageLimit}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex items-start gap-2">
+              <input
+                id="contact-agree"
+                name="agree"
+                type="checkbox"
+                checked={form.agree}
+                onChange={(event) => setForm((prev) => ({ ...prev, agree: event.target.checked }))}
+                required
+                className="mt-1 h-4 w-4 rounded border-sand text-forest focus:ring-forest"
+                aria-invalid={Boolean(errors.agree)}
+                aria-describedby={errors.agree ? "contact-agree-error" : undefined}
+              />
+              <label htmlFor="contact-agree" className="text-sm text-charcoal">
+                I agree to be contacted about my inquiry. We never share your info.
+              </label>
+            </div>
+            {errors.agree && (
+              <p id="contact-agree-error" className="text-sm text-red-600">
+                {errors.agree}
               </p>
             )}
           </div>
+
           <div className="hidden" aria-hidden="true">
-            <label htmlFor="contact-company">Company</label>
-            <input
-              id="contact-company"
-              type="text"
-              name="company"
-              tabIndex={-1}
-              autoComplete="off"
-            />
+            <label>
+              Company
+              <input
+                tabIndex={-1}
+                autoComplete="off"
+                value={form.company ?? ""}
+                onChange={(event) => setForm((prev) => ({ ...prev, company: event.target.value }))}
+              />
+            </label>
           </div>
-          <button
-            type="submit"
-            className="bg-forest text-white px-6 py-3 rounded-2xl hover:bg-lake transition shadow transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            Send
-          </button>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={submitting || !canSubmit}
+              className="inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 text-white font-semibold shadow-md transition hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {submitting ? "Sending…" : "Request a Consultation"}
+            </button>
+            <a href="#testimonials" className="text-forest underline-offset-2 hover:underline">
+              Read guest reviews
+            </a>
+          </div>
         </form>
       </div>
     </section>
