@@ -1,128 +1,231 @@
-type ContactFormData = {
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const PREFERRED_METHOD_VALUES = ['Email', 'Phone', 'Text'] as const;
+const PREFERRED_TIME_VALUES = ['Morning', 'Afternoon', 'Evening'] as const;
+const LISTING_VALUES = ['No', 'Yes – Airbnb', 'Yes – VRBO', 'Yes – Direct Site', 'Other'] as const;
+const SERVICE_VALUES = [
+  'Full-service Hosting',
+  'Setup Only',
+  'Staging & Design',
+  'Digital Guidebook',
+  'Direct Booking Website',
+  'Pricing Optimization',
+] as const;
+
+type PreferredMethod = (typeof PREFERRED_METHOD_VALUES)[number];
+type PreferredTime = (typeof PREFERRED_TIME_VALUES)[number];
+type ListingOption = (typeof LISTING_VALUES)[number];
+type ServiceOption = (typeof SERVICE_VALUES)[number];
+
+export type ContactFormData = {
   name: string;
   email: string;
-  city?: string;
-  message?: string;
+  phone?: string;
+  preferredMethod: PreferredMethod;
+  preferredTime?: PreferredTime;
+  propertyAddresses: string[];
+  currentlyListed: ListingOption;
+  listedLinks?: string[];
+  services: ServiceOption[];
+  desiredStartDate?: string;
+  message: string;
+  agree: boolean;
+  company?: string;
+  startedAt?: number;
+  secondsElapsed?: number;
+  looksSpam?: boolean;
+  meta?: Record<string, unknown>;
 };
 
-type FieldErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string[]>>;
+export type FieldErrors = Record<string, string[]>;
 
-type ValidationSuccess<T> = { success: true; data: T };
-type ValidationFailure<T extends Record<string, unknown>> = {
-  success: false;
-  errors: FieldErrors<T>;
-};
+export type ValidationSuccess<T> = { success: true; data: T };
+export type ValidationFailure = { success: false; errors: FieldErrors };
+export type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure;
 
-type ValidationResult<T extends Record<string, unknown>> =
-  | ValidationSuccess<T>
-  | ValidationFailure<T>;
+function sanitizeString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
 
-type SchemaField<T> = {
-  sanitize: (value: unknown) => { value: T; issues?: string[] };
-  validators?: Array<(value: T) => string | null>;
-};
-
-type Schema<T> = {
-  [K in keyof T]-?: SchemaField<T[K]>;
-};
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const required = (message: string) => (value: string) =>
-  value.length === 0 ? message : null;
-
-const maxLength = (limit: number, message: string) => (value: string) =>
-  value.length > limit ? message : null;
-
-const optionalMaxLength = (limit: number, message: string) => (value?: string) =>
-  value && value.length > limit ? message : null;
-
-const emailFormat = (message: string) => (value: string) =>
-  value.length === 0 || emailPattern.test(value) ? null : message;
-
-export const sanitizeRequiredString = (value: unknown) =>
-  typeof value === 'string' ? value.trim() : '';
-
-export const sanitizeOptionalString = (value: unknown) => {
+function sanitizeOptionalString(value: unknown): string | undefined {
   if (typeof value !== 'string') {
     return undefined;
   }
 
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : undefined;
-};
-
-export const contactFormSchema: Schema<ContactFormData> = {
-  name: {
-    sanitize: value => ({ value: sanitizeRequiredString(value) }),
-    validators: [
-      required('Name is required'),
-      maxLength(100, 'Name must be 100 characters or less'),
-    ],
-  },
-  email: {
-    sanitize: value => ({ value: sanitizeRequiredString(value) }),
-    validators: [
-      required('Email is required'),
-      maxLength(254, 'Email must be 254 characters or less'),
-      emailFormat('Please enter a valid email address'),
-    ],
-  },
-  city: {
-    sanitize: value => ({ value: sanitizeOptionalString(value) }),
-    validators: [optionalMaxLength(100, 'City must be 100 characters or less')],
-  },
-  message: {
-    sanitize: value => ({ value: sanitizeOptionalString(value) }),
-    validators: [optionalMaxLength(1000, 'Message must be 1000 characters or less')],
-  },
-};
-
-export function validateSchema<T extends Record<string, unknown>>(
-  schema: Schema<T>,
-  data: Record<string, unknown>
-): ValidationResult<T> {
-  const fieldErrors: FieldErrors<T> = {};
-  const result: Partial<T> = {};
-  let hasErrors = false;
-
-  (Object.keys(schema) as Array<keyof T>).forEach(key => {
-    const definition = schema[key];
-    const rawValue = data[key as string];
-    const { value, issues = [] } = definition.sanitize(rawValue);
-    const validators = definition.validators ?? [];
-    const errors: string[] = [...issues];
-
-    validators.forEach(validator => {
-      const error = validator(value);
-      if (error) {
-        errors.push(error);
-      }
-    });
-
-    if (errors.length > 0) {
-      fieldErrors[key] = errors;
-      hasErrors = true;
-    }
-
-    if (value !== undefined) {
-      result[key] = value;
-    }
-  });
-
-  if (hasErrors) {
-    return { success: false, errors: fieldErrors };
-  }
-
-  return { success: true, data: result as T };
 }
 
-export type {
-  ContactFormData,
-  Schema,
-  SchemaField,
-  FieldErrors,
-  ValidationResult,
-  ValidationSuccess,
-  ValidationFailure,
-};
+function toStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
+      .filter((entry) => entry.length > 0);
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n/)
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+
+  return [];
+}
+
+function normalizeUrls(values: string[]): string[] {
+  return values.map((value) => {
+    if (/^https?:\/\//i.test(value)) {
+      return value;
+    }
+    return `https://${value}`;
+  });
+}
+
+function ensureAllowed<T extends readonly string[]>(value: string | undefined, allowed: T): T[number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  return (allowed as readonly string[]).includes(value) ? (value as T[number]) : undefined;
+}
+
+function addError(errors: FieldErrors, field: string, message: string) {
+  if (!errors[field]) {
+    errors[field] = [];
+  }
+  errors[field]!.push(message);
+}
+
+export function validateContactForm(payload: Record<string, unknown>): ValidationResult<ContactFormData> {
+  const errors: FieldErrors = {};
+
+  const name = sanitizeString(payload['name']);
+  if (!name) {
+    addError(errors, 'name', 'Name is required.');
+  }
+
+  const email = sanitizeString(payload['email']).toLowerCase();
+  if (!email || !EMAIL_PATTERN.test(email)) {
+    addError(errors, 'email', 'Enter a valid email.');
+  }
+
+  const phone = sanitizeOptionalString(payload['phone']);
+
+  const preferredMethod = ensureAllowed(sanitizeString(payload['preferredMethod']), PREFERRED_METHOD_VALUES);
+  if (!preferredMethod) {
+    addError(errors, 'preferredMethod', 'Preferred contact method is required.');
+  }
+
+  const preferredTime = ensureAllowed(sanitizeString(payload['preferredTime']), PREFERRED_TIME_VALUES);
+
+  const propertyAddressesParsed = Array.isArray(payload['propertyAddressesParsed'])
+    ? toStringArray(payload['propertyAddressesParsed'])
+    : toStringArray(payload['propertyAddresses']);
+  if (propertyAddressesParsed.length === 0) {
+    addError(errors, 'propertyAddresses', 'Provide at least one property address.');
+  }
+
+  const currentlyListed = ensureAllowed(sanitizeString(payload['currentlyListed']), LISTING_VALUES) ?? 'No';
+
+  const listedLinksParsed = Array.isArray(payload['listedLinksParsed'])
+    ? normalizeUrls(toStringArray(payload['listedLinksParsed']))
+    : normalizeUrls(toStringArray(payload['listedLinks']));
+
+  if (currentlyListed !== 'No' && listedLinksParsed.length === 0) {
+    addError(errors, 'listedLinks', 'Include at least one listing link.');
+  }
+
+  const servicesRaw = Array.isArray(payload['services']) ? payload['services'] : [];
+  const services = servicesRaw.reduce<ServiceOption[]>((acc, item) => {
+    if (typeof item !== 'string') {
+      return acc;
+    }
+    const trimmed = item.trim();
+    if ((SERVICE_VALUES as readonly string[]).includes(trimmed) && !acc.includes(trimmed as ServiceOption)) {
+      acc.push(trimmed as ServiceOption);
+    }
+    return acc;
+  }, []);
+
+  if (services.length === 0) {
+    addError(errors, 'services', 'Select at least one service of interest.');
+  }
+
+  const desiredStartDate = sanitizeOptionalString(payload['desiredStartDate']);
+  if (desiredStartDate && !/^\d{4}-\d{2}-\d{2}$/.test(desiredStartDate)) {
+    addError(errors, 'desiredStartDate', 'Start date must be YYYY-MM-DD.');
+  }
+
+  const message = sanitizeString(payload['message']);
+  if (!message) {
+    addError(errors, 'message', 'Tell us a bit about your property or goals.');
+  } else if (message.length > 1000) {
+    addError(errors, 'message', 'Message must be 1000 characters or fewer.');
+  }
+
+  const agree = Boolean(payload['agree']);
+  if (!agree) {
+    addError(errors, 'agree', 'Consent is required.');
+  }
+
+  const company = sanitizeOptionalString(payload['company']);
+  const startedAt = typeof payload['startedAt'] === 'number' ? (payload['startedAt'] as number) : undefined;
+  const secondsElapsed = typeof payload['secondsElapsed'] === 'number' ? (payload['secondsElapsed'] as number) : undefined;
+  const looksSpam = typeof payload['looksSpam'] === 'boolean' ? (payload['looksSpam'] as boolean) : undefined;
+
+  const meta = payload['meta'] && typeof payload['meta'] === 'object' ? (payload['meta'] as Record<string, unknown>) : undefined;
+
+  if (Object.keys(errors).length > 0) {
+    return { success: false, errors };
+  }
+
+  const data: ContactFormData = {
+    name,
+    email,
+    preferredMethod: preferredMethod!,
+    propertyAddresses: propertyAddressesParsed,
+    currentlyListed,
+    services,
+    message,
+    agree,
+  };
+
+  if (phone !== undefined) {
+    data.phone = phone;
+  }
+
+  if (preferredTime) {
+    data.preferredTime = preferredTime;
+  }
+
+  if (listedLinksParsed.length > 0) {
+    data.listedLinks = listedLinksParsed;
+  }
+
+  if (desiredStartDate) {
+    data.desiredStartDate = desiredStartDate;
+  }
+
+  if (company !== undefined) {
+    data.company = company;
+  }
+
+  if (startedAt !== undefined) {
+    data.startedAt = startedAt;
+  }
+
+  if (secondsElapsed !== undefined) {
+    data.secondsElapsed = secondsElapsed;
+  }
+
+  if (looksSpam !== undefined) {
+    data.looksSpam = looksSpam;
+  }
+
+  if (meta !== undefined) {
+    data.meta = meta;
+  }
+
+  return { success: true, data };
+}

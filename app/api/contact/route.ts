@@ -1,4 +1,4 @@
-import { contactFormSchema, validateSchema } from './validation';
+import { validateContactForm } from './validation';
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
@@ -64,6 +64,10 @@ function jsonResponse(body: unknown, init: JsonInit = {}) {
   return new Response(JSON.stringify(body), { ...init, headers });
 }
 
+function createId() {
+  return `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export async function POST(request: Request) {
   try {
     const clientIdentifier = getClientIdentifier(request);
@@ -71,55 +75,50 @@ export async function POST(request: Request) {
     if (isRateLimited(clientIdentifier)) {
       return jsonResponse(
         {
-          success: false,
           message: 'Too many submissions. Please wait a minute and try again.',
         },
         {
           status: 429,
           headers: { 'Retry-After': String(RATE_LIMIT_WINDOW_MS / 1000) },
-        }
+        },
       );
     }
 
-    const data = await request.formData();
+    const payload = await request.json().catch(() => null);
 
-    const honeypotValue = data.get('company');
-    if (typeof honeypotValue === 'string' && honeypotValue.trim().length > 0) {
-      return jsonResponse({
-        success: true,
-        message: 'Thank you for your message! Julia will get back to you within 1 hour.',
-      });
+    if (!payload || typeof payload !== 'object') {
+      return jsonResponse(
+        {
+          message: 'Invalid submission.',
+        },
+        { status: 400 },
+      );
     }
 
-    const rawValues = {
-      name: data.get('name'),
-      email: data.get('email'),
-      city: data.get('city'),
-      message: data.get('message'),
-    };
-
-    const validationResult = validateSchema(contactFormSchema, rawValues);
+    const validationResult = validateContactForm(payload as Record<string, unknown>);
 
     if (!validationResult.success) {
       return jsonResponse(
         {
-          success: false,
           message: 'Please correct the errors below.',
           errors: validationResult.errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    return jsonResponse({
-      success: true,
-      message: 'Thank you for your message! Julia will get back to you within 1 hour.',
-    });
+    const { data } = validationResult;
+
+    if (data.company || data.looksSpam) {
+      return jsonResponse({ id: 'ignored' }, { status: 200 });
+    }
+
+    const id = createId();
+    console.log('[CONTACT]', id, data);
+
+    return jsonResponse({ id }, { status: 200 });
   } catch (error) {
     console.error('Contact form error:', error);
-    return jsonResponse(
-      { success: false, message: 'Something went wrong. Please try again.' },
-      { status: 500 }
-    );
+    return jsonResponse({ message: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 }
