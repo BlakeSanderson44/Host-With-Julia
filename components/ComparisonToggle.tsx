@@ -9,10 +9,10 @@ type ViewOption = {
   label: string;
 };
 
-const viewOptions: ViewOption[] = [
+const viewOptions = [
   { id: 'owner', label: 'Owner-Managed' },
   { id: 'julia', label: 'Host With Julia' },
-];
+] satisfies ReadonlyArray<ViewOption>;
 
 function IconCheck({ className = 'h-5 w-5' }: { className?: string }) {
   return (
@@ -55,18 +55,25 @@ type SegmentedToggleProps = {
 
 function SegmentedToggle({ activeView, onChange }: SegmentedToggleProps) {
   const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      if (!viewOptions.length) return;
+
+      const rawIndex = viewOptions.findIndex((option) => option.id === activeView);
+      const currentIndex = rawIndex >= 0 ? rawIndex : 0;
+
       if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
         event.preventDefault();
-        const nextIndex = (index + 1) % viewOptions.length;
-        onChange(viewOptions[nextIndex].id);
+        const nextIndex = (currentIndex + 1) % viewOptions.length;
+        const nextOption = viewOptions[nextIndex];
+        if (nextOption) onChange(nextOption.id);
       } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
         event.preventDefault();
-        const nextIndex = (index - 1 + viewOptions.length) % viewOptions.length;
-        onChange(viewOptions[nextIndex].id);
+        const nextIndex = (currentIndex - 1 + viewOptions.length) % viewOptions.length;
+        const nextOption = viewOptions[nextIndex];
+        if (nextOption) onChange(nextOption.id);
       }
     },
-    [onChange],
+    [activeView, onChange],
   );
 
   return (
@@ -75,7 +82,7 @@ function SegmentedToggle({ activeView, onChange }: SegmentedToggleProps) {
       aria-label="Comparison view"
       className="inline-flex items-center rounded-full border border-forest/15 bg-cream/70 p-1 shadow-inner"
     >
-      {viewOptions.map((option, index) => {
+      {viewOptions.map((option) => {
         const isActive = option.id === activeView;
         return (
           <button
@@ -83,7 +90,7 @@ function SegmentedToggle({ activeView, onChange }: SegmentedToggleProps) {
             type="button"
             aria-pressed={isActive}
             onClick={() => onChange(option.id)}
-            onKeyDown={(event) => handleKeyDown(event, index)}
+            onKeyDown={handleKeyDown}
             className={`relative rounded-full px-4 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest ${
               isActive
                 ? 'bg-forest text-white shadow'
