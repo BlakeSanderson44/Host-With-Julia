@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import ComparisonToggle from './ComparisonToggle';
 import Section from './ui/Section';
 
 export type ValuePillar = { title: string; description: string };
@@ -17,37 +18,6 @@ export type AboutSectionProps = {
   comparisonRows: ComparisonRow[];
   className?: string;
 };
-
-function IconCheck({ className = 'h-4 w-4 text-forest' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-      <path
-        fillRule="evenodd"
-        d="M16.707 5.293a1 1 0 010 1.414l-7.25 7.25a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414l2.293 2.293 6.543-6.543a1 1 0 011.414 0z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function IconX({ className = 'h-4 w-4 text-rose-500' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-      <path
-        fillRule="evenodd"
-        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function getColumnCopy(column: ColumnContent) {
-  if (column.text) return column.text;
-  if (column.icon === 'check') return 'Included';
-  if (column.icon === 'x') return 'Not included';
-  return '';
-}
 
 function ValueCard({ title, description }: ValuePillar) {
   return (
@@ -87,107 +57,7 @@ export default function AboutSection({ valuePillars, timeSavings, comparisonRows
         </ul>
 
         <div className="mt-12">
-          <div className="space-y-4 md:hidden">
-            {comparisonRows.map((row, index) => {
-              const ownerCopy = getColumnCopy(row.owner);
-              const juliaCopy = getColumnCopy(row.julia) || 'Included';
-              const headingId = `comparison-${index}`;
-
-              return (
-                <article
-                  key={row.label}
-                  className="rounded-2xl border border-forest/15 bg-white p-5 shadow-soft"
-                  aria-labelledby={headingId}
-                >
-                  <h3
-                    id={headingId}
-                    className="text-base font-semibold text-forest"
-                  >
-                    {row.label}
-                  </h3>
-                  <dl className="mt-4 space-y-3">
-                    <div className="rounded-xl border border-forest/10 bg-cream/20 p-4">
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate">
-                        Owner-Managed
-                      </dt>
-                      <dd className="mt-2 flex items-center gap-2 text-sm text-slate">
-                        {row.owner.icon === 'check' && <IconCheck className="h-4 w-4" />}
-                        {row.owner.icon === 'x' && <IconX className="h-4 w-4" />}
-                        <span>{ownerCopy}</span>
-                      </dd>
-                    </div>
-                    <div className="rounded-xl border border-forest/10 bg-forest/5 p-4">
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-forest">
-                        Host With Julia
-                      </dt>
-                      <dd className="mt-2 flex items-center gap-2 text-sm text-forest">
-                        {row.julia.icon === 'check' && <IconCheck className="h-4 w-4" />}
-                        {row.julia.icon === 'x' && <IconX className="h-4 w-4" />}
-                        <span>{juliaCopy}</span>
-                      </dd>
-                    </div>
-                  </dl>
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="hidden overflow-hidden rounded-2xl border border-forest/15 bg-white shadow-soft md:block">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] border-collapse text-left text-sm">
-                <caption className="sr-only">
-                  Comparison of key services for owner-managed properties versus Host With Julia
-                </caption>
-                <thead className="bg-sand text-forest">
-                  <tr>
-                    <th scope="col" className="px-4 py-3 font-semibold">
-                      Feature
-                    </th>
-                    <th scope="col" className="px-4 py-3 font-semibold">
-                      Owner-Managed
-                    </th>
-                    <th scope="col" className="px-4 py-3 font-semibold">
-                      Host With Julia
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-forest/10">
-                  {comparisonRows.map((row) => {
-                    const ownerCopy = getColumnCopy(row.owner);
-                    const juliaCopy = getColumnCopy(row.julia) || 'Included';
-
-                    return (
-                      <tr key={row.label} className="transition hover:bg-sand/60">
-                        <th scope="row" className="px-4 py-4 font-semibold text-forest">
-                          {row.label}
-                        </th>
-                        <td className="px-4 py-4 text-slate">
-                          <span className="sr-only">
-                            Owner-Managed {row.label}: {ownerCopy}
-                          </span>
-                          <span aria-hidden="true" className="inline-flex items-center gap-2">
-                            {row.owner.icon === 'x' && <IconX />}
-                            {row.owner.icon === 'check' && <IconCheck />}
-                            {row.owner.text && <span>{row.owner.text}</span>}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-forest">
-                          <span className="sr-only">
-                            Host With Julia {row.label}: {juliaCopy}
-                          </span>
-                          <span aria-hidden="true" className="inline-flex items-center gap-2">
-                            {row.julia.icon === 'check' && <IconCheck />}
-                            {row.julia.icon === 'x' && <IconX />}
-                            {row.julia.text && <span>{row.julia.text}</span>}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <ComparisonToggle comparisonRows={comparisonRows} />
         </div>
 
         <div className="mt-12 text-center">
