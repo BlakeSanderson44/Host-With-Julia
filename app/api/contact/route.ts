@@ -1,67 +1,43 @@
+import { logRateLimit, logSubmission, sanitizeMeta } from './logging';
+import { readJsonBody } from './readJsonBody';
+import { jsonResponse } from './responses';
+import { SlidingWindowRateLimiter } from './rateLimiter';
 import { validateContactForm } from './validation';
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
+const RATE_LIMIT_MAX_ENTRIES = 1_000;
+const MAX_BODY_BYTES = 16_384;
 
-type RateLimitEntry = { count: number; expiresAt: number };
+const TRUSTED_IP_HEADERS = ['x-vercel-forwarded-for', 'cf-connecting-ip', 'x-real-ip'] as const;
 
-const submissionAttempts = new Map<string, RateLimitEntry>();
+const rateLimiter = new SlidingWindowRateLimiter({
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  maxRequests: RATE_LIMIT_MAX_REQUESTS,
+  maxEntries: RATE_LIMIT_MAX_ENTRIES,
+});
 
-function getClientIdentifier(request: Request) {
-  const forwardedFor = request.headers.get('x-forwarded-for');
-  if (forwardedFor) {
-    const [firstIp] = forwardedFor.split(',');
-    if (firstIp) {
-      return firstIp.trim();
-    }
+type RequestWithIp = Request & { ip?: string | null };
+
+function getClientIdentifier(request: RequestWithIp) {
+  if (typeof request.ip === 'string' && request.ip.trim().length > 0) {
+    return request.ip.trim();
   }
 
-  const realIp = request.headers.get('x-real-ip');
-  if (realIp) {
-    return realIp.trim();
+  for (const header of TRUSTED_IP_HEADERS) {
+    const value = request.headers.get(header);
+    if (value) {
+      const [first] = value.split(',');
+      if (first) {
+        const normalized = first.trim();
+        if (normalized) {
+          return normalized;
+        }
+      }
+    }
   }
 
   return 'unknown';
-}
-
-function isRateLimited(identifier: string) {
-  const now = Date.now();
-
-  for (const key of Array.from(submissionAttempts.keys())) {
-    const entry = submissionAttempts.get(key);
-    if (entry && entry.expiresAt <= now) {
-      submissionAttempts.delete(key);
-    }
-  }
-
-  const entry = submissionAttempts.get(identifier);
-
-  if (!entry || entry.expiresAt <= now) {
-    submissionAttempts.set(identifier, {
-      count: 1,
-      expiresAt: now + RATE_LIMIT_WINDOW_MS,
-    });
-    return false;
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX_REQUESTS) {
-    return true;
-  }
-
-  entry.count += 1;
-  submissionAttempts.set(identifier, entry);
-  return false;
-}
-
-type JsonInit = ResponseInit & { headers?: HeadersInit };
-
-function jsonResponse(body: unknown, init: JsonInit = {}) {
-  const headers = new Headers(init.headers);
-  if (!headers.has('content-type')) {
-    headers.set('content-type', 'application/json; charset=utf-8');
-  }
-
-  return new Response(JSON.stringify(body), { ...init, headers });
 }
 
 function createId() {
@@ -70,21 +46,33 @@ function createId() {
 
 export async function POST(request: Request) {
   try {
-    const clientIdentifier = getClientIdentifier(request);
+    const requestWithIp = request as RequestWithIp;
+    const clientIdentifier = getClientIdentifier(requestWithIp);
 
-    if (isRateLimited(clientIdentifier)) {
+    const rateLimitResult = rateLimiter.registerAttempt(clientIdentifier);
+    if (rateLimitResult.limited) {
+      const retryAfterSeconds = Math.ceil(rateLimitResult.retryAfterMs / 1000);
+      logRateLimit({
+        clientIdentifier,
+        retryAfterSeconds,
+      });
       return jsonResponse(
         {
           message: 'Too many submissions. Please wait a minute and try again.',
         },
         {
           status: 429,
-          headers: { 'Retry-After': String(RATE_LIMIT_WINDOW_MS / 1000) },
+          headers: { 'Retry-After': String(retryAfterSeconds) },
         },
       );
     }
 
-    const payload = await request.json().catch(() => null);
+    const parsed = await readJsonBody(request, MAX_BODY_BYTES);
+    if (!parsed.success) {
+      return parsed.response;
+    }
+
+    const payload = parsed.value;
 
     if (!payload || typeof payload !== 'object') {
       return jsonResponse(
@@ -108,17 +96,61 @@ export async function POST(request: Request) {
     }
 
     const { data } = validationResult;
+    const sanitizedMeta = sanitizeMeta(data.meta);
 
     if (data.company || data.looksSpam) {
-      return jsonResponse({ id: 'ignored' }, { status: 200 });
+      const spamContext: Parameters<typeof logSubmission>[0] = {
+        status: 'spam',
+        id: 'suppressed',
+        clientIdentifier,
+        signals: {
+          secondsElapsed: data.secondsElapsed ?? null,
+        },
+      };
+      if (sanitizedMeta) {
+        spamContext.meta = sanitizedMeta;
+      }
+      logSubmission(spamContext);
+      return jsonResponse(
+        {
+          message: 'Thanks! We will review your details shortly.',
+        },
+        { status: 202 },
+      );
     }
 
     const id = createId();
-    console.log('[CONTACT]', id, data);
+    const acceptedContext: Parameters<typeof logSubmission>[0] = {
+      status: 'accepted',
+      id,
+      clientIdentifier,
+      signals: {
+        services: data.services,
+        currentlyListed: data.currentlyListed,
+        secondsElapsed: data.secondsElapsed ?? null,
+        messageLength: data.message.length,
+      },
+    };
+    if (sanitizedMeta) {
+      acceptedContext.meta = sanitizedMeta;
+    }
+    logSubmission(acceptedContext);
 
-    return jsonResponse({ id }, { status: 200 });
+    return jsonResponse(
+      {
+        id,
+        message: 'Thanks! We received your details.',
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error('Contact form error:', error);
     return jsonResponse({ message: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 }
+
+export const __TESTING__ = {
+  resetRateLimiter() {
+    rateLimiter.reset();
+  },
+};

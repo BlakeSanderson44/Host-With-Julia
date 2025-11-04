@@ -2,6 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import {
+  deriveSubmissionResult,
+  mapErrorResponse,
+  type RemoteErrors as RemoteErrorMap,
+  type SubmissionResult,
+} from "./contactClientUtils";
+
 type PreferredMethod = "Email" | "Phone" | "Text";
 type PreferredTime = "Morning" | "Afternoon" | "Evening";
 type ListedWhere = "No" | "Yes – Airbnb" | "Yes – VRBO" | "Yes – Direct Site" | "Other";
@@ -22,6 +29,10 @@ type FormState = {
   company?: string;
   startedAt?: number;
 };
+
+type FormField = keyof FormState;
+
+type FormRemoteErrors = RemoteErrorMap<FormField>;
 
 const SERVICE_OPTIONS = [
   "Full-service Hosting",
@@ -69,7 +80,8 @@ export default function ContactSection() {
     company: "",
   });
   const [submitting, setSubmitting] = useState(false);
-  const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
+  const [remoteErrors, setRemoteErrors] = useState<FormRemoteErrors>({});
   const startedRef = useRef(false);
   const messageLimit = 1000;
 
@@ -81,7 +93,7 @@ export default function ContactSection() {
   }, []);
 
   const errors = useMemo(() => {
-    const currentErrors: Partial<Record<keyof FormState, string>> = {};
+    const currentErrors: Partial<Record<FormField, string>> = {};
     if (!form.name.trim()) {
       currentErrors.name = "Please enter your name.";
     }
@@ -109,6 +121,21 @@ export default function ContactSection() {
   const canSubmit = Object.keys(errors).length === 0;
   const messageCount = form.message.length;
 
+  function clearRemoteError(field: FormField | "form") {
+    setRemoteErrors((previous) => {
+      if (!previous[field]) {
+        return previous;
+      }
+      const next = { ...previous };
+      delete next[field];
+      return next;
+    });
+  }
+
+  function fieldError(field: FormField) {
+    return remoteErrors[field] ?? errors[field];
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSubmit) return;
@@ -117,7 +144,9 @@ export default function ContactSection() {
       form.startedAt && typeof form.startedAt === "number" ? (Date.now() - form.startedAt) / 1000 : 0;
     const looksSpam = (form.company && form.company.length > 0) || secondsElapsed < 3;
 
+    setRemoteErrors({});
     setSubmitting(true);
+    setSubmissionResult(null);
 
     try {
       const payload = {
@@ -144,39 +173,57 @@ export default function ContactSection() {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error("Request failed");
+      const contentType = response.headers.get("content-type") ?? "";
+      const isJson = contentType.includes("application/json");
+      const body = isJson ? await response.json().catch(() => null) : null;
+
+      if (response.ok) {
+        const result = deriveSubmissionResult(response.status, body);
+        setRemoteErrors({});
+        setSubmissionResult(result);
+
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          if (result.status === "processed" && result.id) {
+            // Optional analytics hook
+            // @ts-expect-error dataLayer is optional
+            window.dataLayer?.push({ event: "lead_submit", lead_id: result.id });
+          }
+        }
+        return;
       }
 
-      const data = (await response.json()) as { id: string };
-      setSubmittedId(data.id);
-
-      if (typeof window !== "undefined") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        // Optional analytics hook
-        // @ts-expect-error dataLayer is optional
-        window.dataLayer?.push({ event: "lead_submit", lead_id: data.id });
-      }
+      const nextErrors = mapErrorResponse<FormField>(response.status, body);
+      setRemoteErrors(nextErrors);
     } catch (error) {
       console.error(error);
-      alert("Sorry, something went wrong. Please try again or email info@hostwithjulia.com.");
+      setRemoteErrors({
+        form: "Sorry, something went wrong. Please try again or email info@hostwithjulia.com.",
+      });
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (submittedId) {
+  if (submissionResult) {
+    const { status, id, message } = submissionResult;
     return (
       <section id="contact" className="bg-cream py-16 sm:py-24" aria-live="polite">
         <div className="max-w-2xl mx-auto px-6 sm:px-10 text-center">
           <h2 className="text-3xl font-bold text-forest">Thanks — we&apos;ll be in touch shortly!</h2>
           <p className="mt-3 text-slate-700">
-            We received your details (ref <span className="font-mono">{submittedId}</span>). Julia or a team member will
-            reach out. If it&apos;s urgent, email {" "}
-            <a className="underline" href="mailto:info@hostwithjulia.com">
-              info@hostwithjulia.com
-            </a>
-            .
+            {message}
+            {status === "processed" && id ? (
+              <>
+                {" "}
+                (ref <span className="font-mono">{id}</span>). Julia or a team member will reach out. If it&apos;s urgent,
+                email {" "}
+                <a className="underline" href="mailto:info@hostwithjulia.com">
+                  info@hostwithjulia.com
+                </a>
+                .
+              </>
+            ) : null}
           </p>
           <a
             href="#top"
@@ -211,15 +258,18 @@ export default function ContactSection() {
                 id="contact-name"
                 name="name"
                 value={form.name}
-                onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+                onChange={(event) => {
+                  clearRemoteError("name");
+                  setForm((prev) => ({ ...prev, name: event.target.value }));
+                }}
                 required
                 className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
-                aria-invalid={Boolean(errors.name)}
-                aria-describedby={errors.name ? "contact-name-error" : undefined}
+                aria-invalid={Boolean(fieldError("name"))}
+                aria-describedby={fieldError("name") ? "contact-name-error" : undefined}
               />
-              {errors.name && (
+              {fieldError("name") && (
                 <p id="contact-name-error" className="mt-1 text-sm text-red-600">
-                  {errors.name}
+                  {fieldError("name")}
                 </p>
               )}
             </div>
@@ -232,15 +282,18 @@ export default function ContactSection() {
                 type="email"
                 name="email"
                 value={form.email}
-                onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+                onChange={(event) => {
+                  clearRemoteError("email");
+                  setForm((prev) => ({ ...prev, email: event.target.value }));
+                }}
                 required
                 className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
-                aria-invalid={Boolean(errors.email)}
-                aria-describedby={errors.email ? "contact-email-error" : undefined}
+                aria-invalid={Boolean(fieldError("email"))}
+                aria-describedby={fieldError("email") ? "contact-email-error" : undefined}
               />
-              {errors.email && (
+              {fieldError("email") && (
                 <p id="contact-email-error" className="mt-1 text-sm text-red-600">
-                  {errors.email}
+                  {fieldError("email")}
                 </p>
               )}
             </div>
@@ -253,7 +306,10 @@ export default function ContactSection() {
                 name="phone"
                 inputMode="tel"
                 value={form.phone ?? ""}
-                onChange={(event) => setForm((prev) => ({ ...prev, phone: event.target.value }))}
+                onChange={(event) => {
+                  clearRemoteError("phone");
+                  setForm((prev) => ({ ...prev, phone: event.target.value }));
+                }}
                 className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
               />
             </div>
@@ -270,7 +326,10 @@ export default function ContactSection() {
                       name="preferredMethod"
                       value={method}
                       checked={form.preferredMethod === method}
-                      onChange={() => setForm((prev) => ({ ...prev, preferredMethod: method }))}
+                      onChange={() => {
+                        clearRemoteError("preferredMethod");
+                        setForm((prev) => ({ ...prev, preferredMethod: method }));
+                      }}
                       className="h-4 w-4 border-sand text-forest focus:ring-forest"
                       required
                     />
@@ -288,6 +347,7 @@ export default function ContactSection() {
                 name="preferredTime"
                 value={form.preferredTime ?? ""}
                 onChange={(event) => {
+                  clearRemoteError("preferredTime");
                   const value = event.target.value as PreferredTime | "";
                   setForm((prev) => {
                     if (!value) {
@@ -317,16 +377,19 @@ export default function ContactSection() {
               name="propertyAddresses"
               rows={3}
               value={form.propertyAddresses}
-              onChange={(event) => setForm((prev) => ({ ...prev, propertyAddresses: event.target.value }))}
+              onChange={(event) => {
+                clearRemoteError("propertyAddresses");
+                setForm((prev) => ({ ...prev, propertyAddresses: event.target.value }));
+              }}
               required
               placeholder={"123 Example St, Edmonds, WA 98020\n456 Lakeview Dr, Chelan, WA 98816"}
               className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
-              aria-invalid={Boolean(errors.propertyAddresses)}
-              aria-describedby={errors.propertyAddresses ? "property-addresses-error" : undefined}
+              aria-invalid={Boolean(fieldError("propertyAddresses"))}
+              aria-describedby={fieldError("propertyAddresses") ? "property-addresses-error" : undefined}
             />
-            {errors.propertyAddresses && (
+            {fieldError("propertyAddresses") && (
               <p id="property-addresses-error" className="mt-1 text-sm text-red-600">
-                {errors.propertyAddresses}
+                {fieldError("propertyAddresses")}
               </p>
             )}
           </div>
@@ -340,9 +403,10 @@ export default function ContactSection() {
                 id="currently-listed"
                 name="currentlyListed"
                 value={form.currentlyListed}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, currentlyListed: event.target.value as ListedWhere }))
-                }
+                onChange={(event) => {
+                  clearRemoteError("currentlyListed");
+                  setForm((prev) => ({ ...prev, currentlyListed: event.target.value as ListedWhere }));
+                }}
                 className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
               >
                 <option>No</option>
@@ -361,22 +425,25 @@ export default function ContactSection() {
                 name="listedLinks"
                 rows={2}
                 value={form.listedLinks ?? ""}
-                onChange={(event) => setForm((prev) => ({ ...prev, listedLinks: event.target.value }))}
+                onChange={(event) => {
+                  clearRemoteError("listedLinks");
+                  setForm((prev) => ({ ...prev, listedLinks: event.target.value }));
+                }}
                 disabled={form.currentlyListed === "No"}
-                aria-invalid={Boolean(errors.listedLinks)}
-                aria-describedby={errors.listedLinks ? "listed-links-error" : undefined}
+                aria-invalid={Boolean(fieldError("listedLinks"))}
+                aria-describedby={fieldError("listedLinks") ? "listed-links-error" : undefined}
                 className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest disabled:cursor-not-allowed disabled:bg-sand/40"
                 placeholder="https://airbnb.com/rooms/12345\nhttps://www.vrbo.com/98765"
               />
-              {errors.listedLinks && (
+              {fieldError("listedLinks") && (
                 <p id="listed-links-error" className="mt-1 text-sm text-red-600">
-                  {errors.listedLinks}
+                  {fieldError("listedLinks")}
                 </p>
               )}
             </div>
           </div>
 
-          <fieldset aria-describedby={errors.services ? "services-error" : undefined}>
+          <fieldset aria-describedby={fieldError("services") ? "services-error" : undefined}>
             <legend className="block text-sm font-medium text-charcoal">Services of interest*</legend>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
               {SERVICE_OPTIONS.map((service) => {
@@ -388,7 +455,8 @@ export default function ContactSection() {
                       name="services"
                       value={service}
                       checked={checked}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        clearRemoteError("services");
                         setForm((prev) => ({
                           ...prev,
                           services: event.target.checked
@@ -396,8 +464,8 @@ export default function ContactSection() {
                               ? prev.services
                               : [...prev.services, service]
                             : prev.services.filter((item) => item !== service),
-                        }))
-                      }
+                        }));
+                      }}
                       className="h-4 w-4 rounded border-sand text-forest focus:ring-forest"
                     />
                     <span className="text-sm text-charcoal">{service}</span>
@@ -405,9 +473,9 @@ export default function ContactSection() {
                 );
               })}
             </div>
-            {errors.services && (
+            {fieldError("services") && (
               <p id="services-error" className="mt-1 text-sm text-red-600">
-                {errors.services}
+                {fieldError("services")}
               </p>
             )}
           </fieldset>
@@ -446,22 +514,26 @@ export default function ContactSection() {
               rows={5}
               maxLength={messageLimit}
               value={form.message}
-              onChange={(event) => setForm((prev) => ({ ...prev, message: event.target.value }))}
+              onChange={(event) => {
+                clearRemoteError("message");
+                setForm((prev) => ({ ...prev, message: event.target.value }));
+              }}
               required
               className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
-              aria-invalid={Boolean(errors.message)}
-              aria-describedby={errors.message ? "contact-message-error" : "message-counter"}
+              aria-invalid={Boolean(fieldError("message"))}
+              aria-describedby={fieldError("message") ? "contact-message-error message-counter" : "message-counter"}
             />
             <div className="mt-1 flex items-center justify-between">
-              {errors.message ? (
+              {fieldError("message") ? (
                 <p id="contact-message-error" className="text-sm text-red-600">
-                  {errors.message}
+                  {fieldError("message")}
                 </p>
               ) : (
-                <span id="message-counter" className="text-xs text-slate-500">
-                  {messageCount}/{messageLimit}
-                </span>
+                <span aria-hidden="true" />
               )}
+              <span id="message-counter" className="text-xs text-slate-500">
+                {messageCount}/{messageLimit}
+              </span>
             </div>
           </div>
 
@@ -472,19 +544,22 @@ export default function ContactSection() {
                 name="agree"
                 type="checkbox"
                 checked={form.agree}
-                onChange={(event) => setForm((prev) => ({ ...prev, agree: event.target.checked }))}
+                onChange={(event) => {
+                  clearRemoteError("agree");
+                  setForm((prev) => ({ ...prev, agree: event.target.checked }));
+                }}
                 required
                 className="mt-1 h-4 w-4 rounded border-sand text-forest focus:ring-forest"
-                aria-invalid={Boolean(errors.agree)}
-                aria-describedby={errors.agree ? "contact-agree-error" : undefined}
+                aria-invalid={Boolean(fieldError("agree"))}
+                aria-describedby={fieldError("agree") ? "contact-agree-error" : undefined}
               />
               <label htmlFor="contact-agree" className="text-sm text-charcoal">
                 I agree to be contacted about my inquiry. We never share your info.
               </label>
             </div>
-            {errors.agree && (
+            {fieldError("agree") && (
               <p id="contact-agree-error" className="text-sm text-red-600">
-                {errors.agree}
+                {fieldError("agree")}
               </p>
             )}
           </div>
@@ -500,6 +575,15 @@ export default function ContactSection() {
               />
             </label>
           </div>
+
+          {remoteErrors.form && (
+            <div
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {remoteErrors.form}
+            </div>
+          )}
 
           <div className="flex items-center gap-3">
             <button

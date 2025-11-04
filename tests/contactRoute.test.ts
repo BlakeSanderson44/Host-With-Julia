@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { POST } from '../app/api/contact/route';
+import { POST, __TESTING__ } from '../app/api/contact/route';
 import { validateContactForm } from '../app/api/contact/validation';
 
 type ContactPayload = Partial<Record<string, unknown>>;
@@ -21,16 +21,32 @@ const basePayload: ContactPayload = {
   secondsElapsed: 5,
 };
 
-function buildRequest(body: ContactPayload, headers: HeadersInit = {}): Request {
-  return new Request(CONTACT_ENDPOINT, {
+type BuildRequestOptions = {
+  headers?: HeadersInit;
+  ip?: string;
+};
+
+function buildRequest(body: ContactPayload, options: BuildRequestOptions = {}): Request {
+  const request = new Request(CONTACT_ENDPOINT, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      ...headers,
+      ...options.headers,
     },
     body: JSON.stringify(body),
   });
+
+  if (options.ip) {
+    Object.defineProperty(request, 'ip', {
+      value: options.ip,
+      configurable: true,
+      enumerable: true,
+    });
+  }
+
+  return request;
 }
+
 
 test('validateContactForm returns sanitized data for valid submissions', () => {
   const result = validateContactForm({
@@ -82,18 +98,21 @@ test('validateContactForm reports validation errors for invalid submissions', ()
 });
 
 test('POST returns id for valid submissions', async () => {
+  __TESTING__.resetRateLimiter();
   const response = await POST(
-    buildRequest(basePayload, { 'x-forwarded-for': '203.0.113.10' }),
+    buildRequest(basePayload, { ip: '203.0.113.10' }),
   );
 
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(typeof body.id, 'string');
+  assert.equal(body.message, 'Thanks! We received your details.');
 });
 
 test('POST returns validation errors for invalid submissions', async () => {
+  __TESTING__.resetRateLimiter();
   const response = await POST(
-    buildRequest({ agree: false }, { 'x-forwarded-for': '203.0.113.20' }),
+    buildRequest({ agree: false }, { ip: '203.0.113.20' }),
   );
 
   assert.equal(response.status, 400);
@@ -104,30 +123,34 @@ test('POST returns validation errors for invalid submissions', async () => {
 });
 
 test('POST treats honeypot or quick submissions as ignored', async () => {
+  __TESTING__.resetRateLimiter();
   const response = await POST(
     buildRequest(
       {
         ...basePayload,
         company: 'Acme Bots',
       },
-      { 'x-forwarded-for': '203.0.113.30' },
+      { ip: '203.0.113.30' },
     ),
   );
 
-  assert.equal(response.status, 200);
+  assert.equal(response.status, 202);
   const body = await response.json();
-  assert.equal(body.id, 'ignored');
+  assert.equal(body.message, 'Thanks! We will review your details shortly.');
 });
 
 test('POST enforces rate limiting per identifier', async () => {
-  const headers = { 'x-forwarded-for': '203.0.113.40' };
+  __TESTING__.resetRateLimiter();
+  const ip = '203.0.113.40';
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    const response = await POST(buildRequest({ ...basePayload, name: `Julia ${attempt}` }, headers));
+    const response = await POST(
+      buildRequest({ ...basePayload, name: `Julia ${attempt}` }, { ip, headers: { 'x-forwarded-for': `198.51.100.${attempt}` } }),
+    );
     assert.equal(response.status, 200);
   }
 
-  const blockedResponse = await POST(buildRequest(basePayload, headers));
+  const blockedResponse = await POST(buildRequest(basePayload, { ip, headers: { 'x-forwarded-for': '203.0.113.99' } }));
   assert.equal(blockedResponse.status, 429);
   assert.equal(
     blockedResponse.headers.get('Retry-After'),
@@ -135,4 +158,76 @@ test('POST enforces rate limiting per identifier', async () => {
   );
   const blockedBody = await blockedResponse.json();
   assert.equal(blockedBody.message, 'Too many submissions. Please wait a minute and try again.');
+});
+
+test('POST uses trusted identifier for rate limiting', async () => {
+  __TESTING__.resetRateLimiter();
+  const ip = '198.51.100.10';
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const response = await POST(
+      buildRequest(basePayload, { ip, headers: { 'x-forwarded-for': `203.0.113.${attempt}` } }),
+    );
+    assert.equal(response.status, 200);
+  }
+
+  const spoofedHeaderResponse = await POST(
+    buildRequest(basePayload, { ip, headers: { 'x-forwarded-for': '198.51.100.250' } }),
+  );
+
+  assert.equal(spoofedHeaderResponse.status, 429);
+});
+
+test('POST rejects payloads exceeding configured limit', async () => {
+  __TESTING__.resetRateLimiter();
+  const largeMessage = 'x'.repeat(20_000);
+  const response = await POST(
+    buildRequest({ ...basePayload, message: largeMessage }, { ip: '203.0.113.55' }),
+  );
+
+  assert.equal(response.status, 413);
+  const body = await response.json();
+  assert.equal(body.message, 'Payload too large.');
+});
+
+test('POST redacts logged output', async () => {
+  __TESTING__.resetRateLimiter();
+  const originalInfo = console.info;
+  const calls: unknown[][] = [];
+  console.info = (...args: unknown[]) => {
+    calls.push(args);
+  };
+
+  try {
+    const response = await POST(
+      buildRequest(
+        {
+          ...basePayload,
+          meta: { path: '/contact', search: '?utm=demo', email: 'should-not-log' },
+        },
+        { ip: '203.0.113.77' },
+      ),
+    );
+
+    assert.equal(response.status, 200);
+  } finally {
+    console.info = originalInfo;
+  }
+
+  assert.equal(calls.length, 1);
+  const [label, payload] = calls[0] as [unknown, unknown];
+  assert.equal(label, '[CONTACT]');
+  const payloadRecord = payload as Record<string, unknown>;
+  assert.equal(payloadRecord['status'], 'accepted');
+  assert.equal(typeof payloadRecord['client'], 'string');
+  assert.ok(payloadRecord['client']);
+  const meta = (payloadRecord['meta'] ?? {}) as Record<string, unknown>;
+  assert.equal(meta['path'], '/contact');
+  assert.equal(meta['search'], '?utm=demo');
+  assert.ok(!('email' in meta));
+  const payloadString = JSON.stringify(payloadRecord);
+  const baseName = String(basePayload['name'] ?? '');
+  const baseEmail = String(basePayload['email'] ?? '');
+  assert.ok(!payloadString.includes(baseName));
+  assert.ok(!payloadString.includes(baseEmail));
 });
