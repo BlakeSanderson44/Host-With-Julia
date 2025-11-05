@@ -2,7 +2,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { POST, __TESTING__ } from '../app/api/contact/route';
+import { POST } from '../app/api/contact/route';
+import { resetRateLimiter } from '../app/api/contact/rateLimiterInstance';
 import { validateContactForm } from '../app/api/contact/validation';
 
 type ContactPayload = Partial<Record<string, unknown>>;
@@ -98,7 +99,7 @@ test('validateContactForm reports validation errors for invalid submissions', ()
 });
 
 test('POST returns id for valid submissions', async () => {
-  __TESTING__.resetRateLimiter();
+  resetRateLimiter();
   const response = await POST(
     buildRequest(basePayload, { ip: '203.0.113.10' }),
   );
@@ -110,7 +111,7 @@ test('POST returns id for valid submissions', async () => {
 });
 
 test('POST returns validation errors for invalid submissions', async () => {
-  __TESTING__.resetRateLimiter();
+  resetRateLimiter();
   const response = await POST(
     buildRequest({ agree: false }, { ip: '203.0.113.20' }),
   );
@@ -123,7 +124,7 @@ test('POST returns validation errors for invalid submissions', async () => {
 });
 
 test('POST treats honeypot or quick submissions as ignored', async () => {
-  __TESTING__.resetRateLimiter();
+  resetRateLimiter();
   const response = await POST(
     buildRequest(
       {
@@ -140,7 +141,7 @@ test('POST treats honeypot or quick submissions as ignored', async () => {
 });
 
 test('POST enforces rate limiting per identifier', async () => {
-  __TESTING__.resetRateLimiter();
+  resetRateLimiter();
   const ip = '203.0.113.40';
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -161,7 +162,7 @@ test('POST enforces rate limiting per identifier', async () => {
 });
 
 test('POST uses trusted identifier for rate limiting', async () => {
-  __TESTING__.resetRateLimiter();
+  resetRateLimiter();
   const ip = '198.51.100.10';
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -179,7 +180,7 @@ test('POST uses trusted identifier for rate limiting', async () => {
 });
 
 test('POST rejects payloads exceeding configured limit', async () => {
-  __TESTING__.resetRateLimiter();
+  resetRateLimiter();
   const largeMessage = 'x'.repeat(20_000);
   const response = await POST(
     buildRequest({ ...basePayload, message: largeMessage }, { ip: '203.0.113.55' }),
@@ -191,7 +192,7 @@ test('POST rejects payloads exceeding configured limit', async () => {
 });
 
 test('POST redacts logged output', async () => {
-  __TESTING__.resetRateLimiter();
+  resetRateLimiter();
   const originalInfo = console.info;
   const calls: unknown[][] = [];
   console.info = (...args: unknown[]) => {

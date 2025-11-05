@@ -1,21 +1,12 @@
 import { logRateLimit, logSubmission, sanitizeMeta } from './logging';
 import { readJsonBody } from './readJsonBody';
 import { jsonResponse } from './responses';
-import { SlidingWindowRateLimiter } from './rateLimiter';
+import { registerAttempt } from './rateLimiterInstance';
 import { validateContactForm } from './validation';
 
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 5;
-const RATE_LIMIT_MAX_ENTRIES = 1_000;
 const MAX_BODY_BYTES = 16_384;
 
 const TRUSTED_IP_HEADERS = ['x-vercel-forwarded-for', 'cf-connecting-ip', 'x-real-ip'] as const;
-
-const rateLimiter = new SlidingWindowRateLimiter({
-  windowMs: RATE_LIMIT_WINDOW_MS,
-  maxRequests: RATE_LIMIT_MAX_REQUESTS,
-  maxEntries: RATE_LIMIT_MAX_ENTRIES,
-});
 
 type RequestWithIp = Request & { ip?: string | null };
 
@@ -49,7 +40,7 @@ export async function POST(request: Request) {
     const requestWithIp = request as RequestWithIp;
     const clientIdentifier = getClientIdentifier(requestWithIp);
 
-    const rateLimitResult = rateLimiter.registerAttempt(clientIdentifier);
+    const rateLimitResult = registerAttempt(clientIdentifier);
     if (rateLimitResult.limited) {
       const retryAfterSeconds = Math.ceil(rateLimitResult.retryAfterMs / 1000);
       logRateLimit({
@@ -68,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     const parsed = await readJsonBody(request, MAX_BODY_BYTES);
-    if (!parsed.success) {
+    if (parsed.success === false) {
       return parsed.response;
     }
 
@@ -85,7 +76,7 @@ export async function POST(request: Request) {
 
     const validationResult = validateContactForm(payload as Record<string, unknown>);
 
-    if (!validationResult.success) {
+    if (validationResult.success === false) {
       return jsonResponse(
         {
           message: 'Please correct the errors below.',
@@ -148,9 +139,3 @@ export async function POST(request: Request) {
     return jsonResponse({ message: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 }
-
-export const __TESTING__ = {
-  resetRateLimiter() {
-    rateLimiter.reset();
-  },
-};
