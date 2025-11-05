@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     const parsed = await readJsonBody(request, MAX_BODY_BYTES);
-    if (!parsed.success) {
+    if (parsed.success === false) {
       return parsed.response;
     }
 
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
 
     const validationResult = validateContactForm(payload as Record<string, unknown>);
 
-    if (!validationResult.success) {
+    if (validationResult.success === false) {
       return jsonResponse(
         {
           message: 'Please correct the errors below.',
