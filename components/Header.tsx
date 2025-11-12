@@ -109,10 +109,18 @@ export default function Header({ navItems }: HeaderProps) {
     return hashIndex >= 0 ? href.slice(hashIndex) : '';
   }, []);
 
+  const getPathnameFromHref = useCallback(
+    (href: string) => {
+      const [pathPart = ''] = href.split('#');
+      return normalizePath(pathPart);
+    },
+    [normalizePath],
+  );
+
   const isNavItemActive = useCallback(
     (href: string) => {
       const targetHash = getHashFromHref(href);
-      const targetPath = normalizePath(href.split('#')[0]);
+      const targetPath = getPathnameFromHref(href);
       const currentPath = normalizePath(pathname);
 
       if (!targetHash) {
