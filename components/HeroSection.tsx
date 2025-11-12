@@ -62,11 +62,11 @@ export default function HeroSection() {
         </p>
 
         <div className="mb-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Button href="#contact" variant="primary" className="text-lg px-8 py-4 shadow-glow">
+          <Button href="/#contact" variant="primary" className="text-lg px-8 py-4 shadow-glow">
             Get a Free Property Review
           </Button>
           <Button
-            href="#how"
+            href="/#how"
             variant="secondary"
             className="text-lg px-8 py-4 border-white/40 text-white/90 hover:text-white"
           >

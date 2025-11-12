@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SmoothAnchorLink from "./ui/SmoothAnchorLink";
 
 const DISMISS_KEY = "hwj_cta_dismissed_until";
 const DISMISS_DAYS = 7;
@@ -172,12 +173,12 @@ export default function StickyCTA() {
           >
             ×
           </button>
-          <a
-            href="#contact"
+          <SmoothAnchorLink
+            href="/#contact"
             className="block rounded-xl bg-gradient-to-r from-forest to-forest-light px-5 py-4 text-center font-semibold text-white shadow-lg transition-transform duration-200 active:scale-95"
           >
             Get a Free Property Review
-          </a>
+          </SmoothAnchorLink>
         </div>
       </div>
     </div>

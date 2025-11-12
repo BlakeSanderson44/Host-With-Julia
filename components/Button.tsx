@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import Link from 'next/link';
+import SmoothAnchorLink from './ui/SmoothAnchorLink';
 
 interface ButtonProps {
   href: string;
@@ -16,8 +16,8 @@ export default function Button({ href, children, variant = 'primary', className 
       ? 'bg-gradient-to-r from-forest to-forest-light text-white hover:from-forest-light hover:to-lake hover:shadow-glow'
       : 'border-2 border-forest bg-transparent text-forest hover:border-transparent hover:bg-gradient-to-r hover:from-forest hover:to-lake hover:text-white hover:shadow-glow';
   return (
-    <Link href={href} className={`${base} ${styles} ${className}`}>
+    <SmoothAnchorLink href={href} className={`${base} ${styles} ${className}`}>
       {children}
-    </Link>
+    </SmoothAnchorLink>
   );
 }

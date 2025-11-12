@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import SmoothAnchorLink from '../../../components/ui/SmoothAnchorLink';
+
 const baseUrl = 'https://hostwithjulia.com';
 const breadcrumbItems = [
   { label: 'Home', href: '/' },
@@ -58,18 +60,18 @@ export default function MtRainierPage() {
                 trailheads year-round.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link
+                <SmoothAnchorLink
                   href="/#contact"
                   className="rounded-full bg-forest px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-forest/90"
                 >
                   Get a Free Property Review
-                </Link>
-                <Link
+                </SmoothAnchorLink>
+                <SmoothAnchorLink
                   href="/#properties"
                   className="rounded-full border border-forest px-6 py-3 text-sm font-semibold text-forest transition hover:bg-forest/5"
                 >
                   View Properties
-                </Link>
+                </SmoothAnchorLink>
               </div>
             </div>
 

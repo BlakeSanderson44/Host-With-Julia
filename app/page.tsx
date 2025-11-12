@@ -95,13 +95,13 @@ const ContactSection = dynamic(() => import('@/components/ContactSection'), {
 });
 
 const navItems: NavItem[] = [
-  { href: '#how', label: 'How' },
-  { href: '#services', label: 'Services' },
-  { href: '#locations', label: 'Locations' },
-  { href: '#properties', label: 'Properties' },
-  { href: '#about', label: 'Why Me' },
-  { href: '#testimonials', label: 'Testimonials' },
-  { href: '#contact', label: 'Contact' },
+  { href: '/#how', label: 'How' },
+  { href: '/#services', label: 'Services' },
+  { href: '/#locations', label: 'Locations' },
+  { href: '/#properties', label: 'Properties' },
+  { href: '/#about', label: 'Why Me' },
+  { href: '/#testimonials', label: 'Testimonials' },
+  { href: '/#contact', label: 'Contact' },
 ];
 
 const aboutSectionContent = {

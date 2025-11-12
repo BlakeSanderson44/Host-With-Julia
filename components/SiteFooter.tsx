@@ -1,3 +1,6 @@
+import Link from 'next/link';
+
+import SmoothAnchorLink from './ui/SmoothAnchorLink';
 import { NavItem } from './Header';
 
 interface SiteFooterProps {
@@ -8,13 +11,15 @@ export default function SiteFooter({ navItems }: SiteFooterProps) {
   return (
     <footer className="bg-forest text-white py-10">
       <div className="max-w-6xl mx-auto px-4 text-center space-y-4">
-        <div className="font-bold text-xl">Host With Julia</div>
+        <Link href="/" scroll={false} className="font-bold text-xl">
+          Host With Julia
+        </Link>
         <p>Boutique STR Management · Western WA.</p>
         <nav className="flex justify-center gap-4">
           {navItems.map((item) => (
-            <a key={item.href} href={item.href} className="hover:text-moss">
+            <SmoothAnchorLink key={item.href} href={item.href} className="hover:text-moss">
               {item.label}
-            </a>
+            </SmoothAnchorLink>
           ))}
         </nav>
         <div className="flex justify-center gap-8">

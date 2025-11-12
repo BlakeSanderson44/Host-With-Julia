@@ -1,3 +1,4 @@
+import SmoothAnchorLink from './ui/SmoothAnchorLink';
 import type { SVGProps } from 'react';
 
 type ServicesSectionProps = {
@@ -129,18 +130,18 @@ export default function ServicesSection({ className }: ServicesSectionProps) {
         </div>
 
         <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
-          <a
-            href="#contact"
+          <SmoothAnchorLink
+            href="/#contact"
             className="inline-flex justify-center rounded-xl bg-forest px-5 py-3 text-center font-semibold text-white shadow transition-[transform,opacity] duration-200 active:scale-95"
           >
             Get a Free Property Review
-          </a>
-          <a
-            href="#contact"
+          </SmoothAnchorLink>
+          <SmoothAnchorLink
+            href="/#contact"
             className="inline-flex justify-center rounded-xl border border-forest bg-white px-5 py-3 text-center font-semibold text-forest transition-colors hover:bg-cream/60"
           >
             Customize Your Plan
-          </a>
+          </SmoothAnchorLink>
         </div>
 
         <div className="mt-10 md:hidden">

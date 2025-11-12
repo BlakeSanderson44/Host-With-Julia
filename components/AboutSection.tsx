@@ -1,7 +1,6 @@
-import Link from 'next/link';
-
 import ComparisonToggle from './ComparisonToggle';
 import Section from './ui/Section';
+import SmoothAnchorLink from './ui/SmoothAnchorLink';
 
 export type ValuePillar = { title: string; description: string };
 export type TimeSaving = { icon: string; label: string };
@@ -61,13 +60,13 @@ export default function AboutSection({ valuePillars, timeSavings, comparisonRows
         </div>
 
         <div className="mt-12 text-center">
-          <Link
-            href="#contact"
+          <SmoothAnchorLink
+            href="/#contact"
             aria-label="Contact Julia to save time and stress"
             className="inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 text-base font-semibold text-white shadow-medium transition hover:bg-forest-light focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
           >
             See How Much Time &amp; Stress You Could Save → Contact Julia
-          </Link>
+          </SmoothAnchorLink>
         </div>
       </div>
     </Section>

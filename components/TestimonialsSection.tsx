@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { SVGProps } from "react";
 import { TESTIMONIALS } from "@/data/testimonials";
+import SmoothAnchorLink from "./ui/SmoothAnchorLink";
 
 type TestimonialsSectionProps = {
   className?: string;
@@ -156,12 +157,12 @@ export default function TestimonialsSection({ className }: TestimonialsSectionPr
         </div>
 
         <div className="mt-10 sm:mt-12">
-          <a
-            href="#contact"
+          <SmoothAnchorLink
+            href="/#contact"
             className="inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 font-semibold text-white shadow-md transition hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
           >
             See How Much Time &amp; Stress You Could Save → Contact Julia
-          </a>
+          </SmoothAnchorLink>
         </div>
       </div>
     </section>

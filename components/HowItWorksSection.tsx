@@ -57,12 +57,12 @@ export default function HowItWorksSection({
     return { title, description };
   });
 
-  const sectionClasses = ['bg-white py-16 sm:py-24', className]
+  const sectionClasses = ['bg-white py-16 sm:py-24 scroll-mt-24 md:scroll-mt-28', className]
     .filter((token): token is string => Boolean(token && token.trim().length > 0))
     .join(' ');
 
   return (
-    <section id="how-it-works" aria-labelledby={headingId} className={sectionClasses}>
+    <section id="how" aria-labelledby={headingId} className={sectionClasses}>
       <div className="mx-auto max-w-6xl px-6 sm:px-10">
         <header className="mx-auto mb-10 max-w-2xl text-center sm:mb-14">
           <h2 id={headingId} className="text-3xl font-bold text-forest">

@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import SmoothAnchorLink from "./ui/SmoothAnchorLink";
+
 import {
   deriveSubmissionResult,
   mapErrorResponse,
@@ -225,12 +227,12 @@ export default function ContactSection() {
               </>
             ) : null}
           </p>
-          <a
-            href="#top"
+          <SmoothAnchorLink
+            href="/#main"
             className="mt-6 inline-flex rounded-full bg-forest px-6 py-3 text-white font-semibold shadow-md hover:shadow-lg transition"
           >
             Back to top
-          </a>
+          </SmoothAnchorLink>
         </div>
       </section>
     );
@@ -593,9 +595,12 @@ export default function ContactSection() {
             >
               {submitting ? "Sending…" : "Request a Consultation"}
             </button>
-            <a href="#testimonials" className="text-forest underline-offset-2 hover:underline">
+            <SmoothAnchorLink
+              href="/#testimonials"
+              className="text-forest underline-offset-2 hover:underline"
+            >
               Read guest reviews
-            </a>
+            </SmoothAnchorLink>
           </div>
         </form>
       </div>

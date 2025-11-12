@@ -39,7 +39,7 @@ export default function Hero() {
 
         <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
           <a
-            href="#contact"
+            href="/#contact"
             aria-label="Get a Free Property Review"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 font-medium text-white shadow-lg transition-colors hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"
           >
@@ -49,7 +49,7 @@ export default function Hero() {
             No pressure. 24–48h.
           </span>
           <a
-            href="#how"
+            href="/#how"
             aria-label="See how it works"
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 px-5 py-3 font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >

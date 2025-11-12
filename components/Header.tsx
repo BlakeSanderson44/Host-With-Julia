@@ -7,7 +7,9 @@ import {
   useState,
   type MouseEvent,
 } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import SmoothAnchorLink from './ui/SmoothAnchorLink';
 
 export interface NavItem {
   href: string;
@@ -90,23 +92,44 @@ export default function Header({ navItems }: HeaderProps) {
     };
   }, [close]);
 
+  const normalizePath = useCallback((value: string) => {
+    if (!value || value === '#') {
+      return '/';
+    }
+
+    if (!value.startsWith('/')) {
+      return `/${value}`;
+    }
+
+    return value.length > 1 && value.endsWith('/') ? value.slice(0, -1) : value;
+  }, []);
+
+  const getHashFromHref = useCallback((href: string) => {
+    const hashIndex = href.indexOf('#');
+    return hashIndex >= 0 ? href.slice(hashIndex) : '';
+  }, []);
+
   const isNavItemActive = useCallback(
     (href: string) => {
-      if (href.startsWith('#')) {
-        if (activeHash) {
-          return activeHash === href;
-        }
+      const targetHash = getHashFromHref(href);
+      const targetPath = normalizePath(href.split('#')[0]);
+      const currentPath = normalizePath(pathname);
 
-        return pathname === '/' && href === '#how';
+      if (!targetHash) {
+        return currentPath === targetPath;
       }
 
-      const normalizedHref = href !== '/' && href.endsWith('/') ? href.slice(0, -1) : href;
-      const normalizedPathname =
-        pathname !== '/' && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+      if (currentPath !== targetPath) {
+        return false;
+      }
 
-      return normalizedPathname === normalizedHref;
+      if (activeHash) {
+        return activeHash === targetHash;
+      }
+
+      return currentPath === '/' && targetHash === '#how';
     },
-    [activeHash, pathname],
+    [activeHash, getHashFromHref, normalizePath, pathname],
   );
 
   const handleBackdropClick = useCallback(() => {
@@ -127,19 +150,19 @@ export default function Header({ navItems }: HeaderProps) {
         aria-label="Primary navigation"
         className="max-w-6xl mx-auto flex items-center justify-between p-4"
       >
-        <a href="#" className="font-bold text-forest">
+        <Link href="/" className="font-bold text-forest" scroll={false}>
           Host With Julia
-        </a>
+        </Link>
         <ul className="hidden md:flex gap-6">
           {navItems.map((item) => (
             <li key={item.href}>
-              <a
+              <SmoothAnchorLink
                 href={item.href}
                 className="text-charcoal hover:text-lake rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60"
                 aria-current={isNavItemActive(item.href) ? 'page' : undefined}
               >
                 {item.label}
-              </a>
+              </SmoothAnchorLink>
             </li>
           ))}
         </ul>
@@ -170,14 +193,16 @@ export default function Header({ navItems }: HeaderProps) {
             <ul className="flex flex-col p-4 space-y-4">
               {navItems.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <SmoothAnchorLink
                     href={item.href}
                     className="text-charcoal hover:text-lake block py-2 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60"
                     aria-current={isNavItemActive(item.href) ? 'page' : undefined}
-                    onClick={handleNavLinkClick}
+                    onClick={() => {
+                      handleNavLinkClick();
+                    }}
                   >
                     {item.label}
-                  </a>
+                  </SmoothAnchorLink>
                 </li>
               ))}
             </ul>

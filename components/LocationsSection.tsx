@@ -1,5 +1,7 @@
 'use client';
 
+import SmoothAnchorLink from './ui/SmoothAnchorLink';
+
 type AnyRecord = Record<string, unknown>;
 
 type LocationsSectionProps = {
@@ -106,12 +108,12 @@ export default function LocationsSection({ locations }: LocationsSectionProps) {
                 )}
 
                 <div className="mt-auto pt-2">
-                  <a
-                    href="#contact"
+                  <SmoothAnchorLink
+                    href="/#contact"
                     className="inline-flex justify-center rounded-xl bg-forest px-4 py-2 font-semibold text-white shadow transition-[transform,opacity] duration-200 active:scale-95"
                   >
                     Ask about {name}
-                  </a>
+                  </SmoothAnchorLink>
                 </div>
               </div>
             </article>
