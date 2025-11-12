@@ -2,6 +2,8 @@ import './globals.css';
 import { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
+import SkipLink from '@/components/SkipLink';
+
 export const metadata: Metadata = {
   title: 'Host With Julia',
   description:
@@ -70,12 +72,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="bg-cream text-charcoal">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 p-2 bg-forest text-white"
-        >
-          Skip to content
-        </a>
+        <SkipLink />
         {children}
       </body>
     </html>

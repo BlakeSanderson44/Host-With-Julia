@@ -1,8 +1,10 @@
 "use client";
 
 import Image from 'next/image';
-import { defaultSizes, requireAlt } from '@/lib/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { focusVisibleRing } from '@/lib/a11y';
+import { defaultSizes, requireAlt } from '@/lib/image';
 
 export interface PropertyItem {
   id: string;
@@ -140,10 +142,11 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
             type="button"
             onClick={() => scrollCarousel(-400)}
             disabled={!canScrollLeft}
-            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -ml-4 transition-all duration-300 hover:scale-110 ${
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/90 p-3 -ml-4 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-white ${focusVisibleRing} ${
               canScrollLeft ? '' : 'opacity-0 pointer-events-none'
             }`}
             aria-label="Previous properties"
+            aria-controls="property-carousel"
           >
             <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -153,10 +156,11 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
             type="button"
             onClick={() => scrollCarousel(400)}
             disabled={!canScrollRight}
-            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -mr-4 transition-all duration-300 hover:scale-110 ${
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/90 p-3 -mr-4 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-white ${focusVisibleRing} ${
               canScrollRight ? '' : 'opacity-0 pointer-events-none'
             }`}
             aria-label="Next properties"
+            aria-controls="property-carousel"
           >
             <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -164,9 +168,10 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
           </button>
           <div
             ref={carouselRef}
+            id="property-carousel"
             className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth pb-4 snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollBehavior: 'smooth' }}
-            >
+          >
             {properties.map((property, idx) => {
               const altText = requireAlt(
                 [property.name, property.description].filter(Boolean).join(' – '),
@@ -176,7 +181,13 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
                 <div
                   key={property.id}
                   data-card-index={idx}
+                  id={`property-panel-${property.id}`}
                   className="group bg-white rounded-2xl shadow-soft hover:shadow-large transition-all duration-300 overflow-hidden transform hover:-translate-y-2 flex-shrink-0 w-80 snap-start"
+                  role="tabpanel"
+                  aria-roledescription="Slide"
+                  aria-labelledby={`property-tab-${property.id}`}
+                  aria-hidden={activeIndex !== idx}
+                  tabIndex={activeIndex === idx ? 0 : -1}
                 >
                   <div className="relative h-64 overflow-hidden">
                     {idx === 0 ? (
@@ -217,9 +228,11 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
                         href={property.airbnbUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                        className={`text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all rounded-full px-2 ${focusVisibleRing}`}
+                        aria-label={`View ${property.name} on Airbnb (opens in a new tab)`}
                       >
-                        View on Airbnb
+                        <span aria-hidden="true">View on Airbnb</span>
+                        <span className="sr-only"> for {property.name}</span>
                         <span className="group-hover:translate-x-1 transition-transform">↗</span>
                       </a>
                     </div>
@@ -229,19 +242,29 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
             })}
           </div>
         </div>
-        <div className="flex justify-center mt-8 space-x-2" aria-label="Select featured property">
+        <div
+          className="flex justify-center mt-8 space-x-2"
+          role="tablist"
+          aria-label="Select featured property"
+        >
           {properties.map((property, idx) => (
             <button
               key={property.id}
               type="button"
-              aria-label={`Go to property ${idx + 1}`}
-              aria-current={activeIndex === idx ? 'true' : 'false'}
+              id={`property-tab-${property.id}`}
+              role="tab"
+              aria-controls={`property-panel-${property.id}`}
+              aria-label={`Show property ${idx + 1}: ${property.name}`}
+              aria-selected={activeIndex === idx}
+              tabIndex={activeIndex === idx ? 0 : -1}
               onClick={() => {
                 const target = carouselRef.current?.querySelector<HTMLElement>(`[data-card-index="${idx}"]`);
                 target?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
               }}
-              className={`h-2 w-2 rounded-full transition-transform duration-200 ${
-                activeIndex === idx ? 'bg-forest scale-110' : 'bg-forest/30 hover:bg-forest/50'
+              className={`h-3 w-3 rounded-full transition-transform duration-200 ${
+                activeIndex === idx
+                  ? `bg-forest scale-110 ${focusVisibleRing}`
+                  : `bg-forest/30 hover:bg-forest/50 ${focusVisibleRing}`
               }`}
             />
           ))}

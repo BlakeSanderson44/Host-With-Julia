@@ -4,6 +4,8 @@ import Link from 'next/link';
 
 import { LOCATIONS } from '@/data/locations';
 
+import { focusVisibleRing } from '@/lib/a11y';
+
 export default function LocationGrid() {
   return (
     <section
@@ -41,7 +43,7 @@ export default function LocationGrid() {
                 <h3 className="text-lg font-medium">{loc.name}</h3>
                 <Link
                   href={`/locations/${loc.slug}`}
-                  className="text-sm underline-offset-2 hover:underline"
+                  className={`text-sm underline-offset-2 hover:underline rounded-md px-1 ${focusVisibleRing}`}
                   aria-label={`Learn more about ${loc.name}`}
                 >
                   Learn more

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { focusVisibleRing } from "@/lib/a11y";
+
 const DISMISS_KEY = "hwj_cta_dismissed_until";
 const DISMISS_DAYS = 7;
 
@@ -168,13 +170,13 @@ export default function StickyCTA() {
             type="button"
             aria-label="Dismiss"
             onClick={handleDismiss}
-            className="absolute -top-3 -right-2 flex h-8 w-8 items-center justify-center rounded-full border border-sand bg-cream/90 text-lg font-semibold text-charcoal shadow"
+            className={`absolute -top-3 -right-2 flex h-8 w-8 items-center justify-center rounded-full border border-sand bg-cream/90 text-lg font-semibold text-charcoal shadow ${focusVisibleRing}`}
           >
             ×
           </button>
           <a
             href="#contact"
-            className="block rounded-xl bg-gradient-to-r from-forest to-forest-light px-5 py-4 text-center font-semibold text-white shadow-lg transition-transform duration-200 active:scale-95"
+            className={`block rounded-xl bg-gradient-to-r from-forest to-forest-light px-5 py-4 text-center font-semibold text-white shadow-lg transition-transform duration-200 active:scale-95 ${focusVisibleRing}`}
           >
             Get a Free Property Review
           </a>

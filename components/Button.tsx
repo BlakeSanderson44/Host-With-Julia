@@ -1,6 +1,8 @@
 import { type ReactNode } from 'react';
 import Link from 'next/link';
 
+import { focusVisibleRing } from '@/lib/a11y';
+
 interface ButtonProps {
   href: string;
   children: ReactNode;
@@ -10,7 +12,7 @@ interface ButtonProps {
 
 export default function Button({ href, children, variant = 'primary', className = '' }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center rounded-2xl px-6 py-3 font-semibold transition-all duration-300 transform hover:scale-105 shadow-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lake';
+    `inline-flex items-center justify-center rounded-2xl px-6 py-3 font-semibold transition-all duration-300 transform hover:scale-105 shadow-medium ${focusVisibleRing}`;
   const styles =
     variant === 'primary'
       ? 'bg-gradient-to-r from-forest to-forest-light text-white hover:from-forest-light hover:to-lake hover:shadow-glow'

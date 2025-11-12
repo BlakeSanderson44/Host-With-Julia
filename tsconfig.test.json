@@ -10,10 +10,17 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": false,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@testing-library/react": ["vendor/@testing-library/react/index"],
+      "@testing-library/react/*": ["vendor/@testing-library/react/*"],
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "tests/**/*.ts",
+    "tests/**/*.tsx",
     "app/api/**/*.ts",
     "types/**/*.d.ts"
   ]

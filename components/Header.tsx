@@ -9,6 +9,8 @@ import {
 } from 'react';
 import { usePathname } from 'next/navigation';
 
+import { focusVisibleRing } from '@/lib/a11y';
+
 export interface NavItem {
   href: string;
   label: string;
@@ -122,12 +124,15 @@ export default function Header({ navItems }: HeaderProps) {
   }, [close]);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur border-b border-sand">
+    <header
+      aria-label="Site header"
+      className="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur border-b border-sand"
+    >
       <nav
         aria-label="Primary navigation"
         className="max-w-6xl mx-auto flex items-center justify-between p-4"
       >
-        <a href="#" className="font-bold text-forest">
+        <a href="/" className={`font-bold text-forest rounded-md px-2 py-1 ${focusVisibleRing}`}>
           Host With Julia
         </a>
         <ul className="hidden md:flex gap-6">
@@ -135,7 +140,7 @@ export default function Header({ navItems }: HeaderProps) {
             <li key={item.href}>
               <a
                 href={item.href}
-                className="text-charcoal hover:text-lake rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60"
+                className={`text-charcoal hover:text-lake rounded-md px-2 py-1 ${focusVisibleRing}`}
                 aria-current={isNavItemActive(item.href) ? 'page' : undefined}
               >
                 {item.label}
@@ -145,10 +150,11 @@ export default function Header({ navItems }: HeaderProps) {
         </ul>
         <button
           ref={toggleRef}
-          className="md:hidden text-forest"
-          aria-label="Menu"
+          className={`md:hidden text-forest rounded-md p-2 ${focusVisibleRing}`}
+          aria-label={open ? 'Close primary navigation' : 'Open primary navigation'}
           aria-expanded={open}
           aria-controls="mobile-menu"
+          aria-haspopup="true"
           onClick={handleToggle}
         >
           {open ? '✕' : '☰'}
@@ -172,7 +178,7 @@ export default function Header({ navItems }: HeaderProps) {
                 <li key={item.href}>
                   <a
                     href={item.href}
-                    className="text-charcoal hover:text-lake block py-2 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60"
+                    className={`text-charcoal hover:text-lake block rounded-md px-2 py-2 ${focusVisibleRing}`}
                     aria-current={isNavItemActive(item.href) ? 'page' : undefined}
                     onClick={handleNavLinkClick}
                   >

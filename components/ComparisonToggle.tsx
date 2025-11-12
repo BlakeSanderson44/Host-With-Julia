@@ -4,6 +4,8 @@ import { useCallback, useState, type KeyboardEvent } from 'react';
 
 import type { ComparisonRow } from './AboutSection';
 
+import { focusVisibleRing } from '@/lib/a11y';
+
 type ViewOption = {
   id: 'owner' | 'julia';
   label: string;
@@ -78,8 +80,9 @@ function SegmentedToggle({ activeView, onChange }: SegmentedToggleProps) {
 
   return (
     <div
-      role="group"
+      role="tablist"
       aria-label="Comparison view"
+      aria-orientation="horizontal"
       className="inline-flex items-center rounded-full border border-forest/15 bg-cream/70 p-1 shadow-inner"
     >
       {viewOptions.map((option) => {
@@ -88,10 +91,14 @@ function SegmentedToggle({ activeView, onChange }: SegmentedToggleProps) {
           <button
             key={option.id}
             type="button"
-            aria-pressed={isActive}
+            role="tab"
+            id={`comparison-tab-${option.id}`}
+            aria-selected={isActive}
+            aria-controls="comparison-panel"
+            tabIndex={isActive ? 0 : -1}
             onClick={() => onChange(option.id)}
             onKeyDown={handleKeyDown}
-            className={`relative rounded-full px-4 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest ${
+            className={`relative rounded-full px-4 py-2 text-sm font-medium transition ${focusVisibleRing} ${
               isActive
                 ? 'bg-forest text-white shadow'
                 : 'text-forest/80 hover:bg-forest/10'
@@ -182,13 +189,19 @@ export default function ComparisonToggle({ comparisonRows }: ComparisonTogglePro
         <SegmentedToggle activeView={activeView} onChange={setActiveView} />
       </div>
 
-      <ul className="mt-6 grid gap-4 md:gap-5" aria-label={`${viewLabel} feature list`}>
+      <ul
+        id="comparison-panel"
+        role="tabpanel"
+        aria-labelledby={`comparison-tab-${activeView}`}
+        className="mt-6 grid gap-4 md:gap-5"
+        aria-label={`${viewLabel} feature list`}
+      >
         {comparisonRows.map((row) => (
           <FeatureCard key={row.label} row={row} activeView={activeView} viewLabel={viewLabel} />
         ))}
       </ul>
 
-      <p className="mt-6 text-xs text-slate">
+      <p className="mt-6 text-xs text-slate" aria-live="polite">
         Viewing: <span className="font-semibold text-forest">{viewLabel}</span>. Switch the toggle above to see the other side.
       </p>
     </section>

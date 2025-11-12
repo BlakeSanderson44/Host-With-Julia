@@ -222,7 +222,7 @@ export default function Home() {
   return (
     <>
       <Header navItems={navItems} />
-      <main id="main" className="pt-16">
+      <main id="main" tabIndex={-1} className="pt-16">
         <HeroSection />
         <HowItWorksSection steps={howItWorksSteps} />
         <ServicesSection />

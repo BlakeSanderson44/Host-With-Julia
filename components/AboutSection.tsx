@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { focusVisibleRing } from '@/lib/a11y';
+
 import ComparisonToggle from './ComparisonToggle';
 import Section from './ui/Section';
 
@@ -64,7 +66,7 @@ export default function AboutSection({ valuePillars, timeSavings, comparisonRows
           <Link
             href="#contact"
             aria-label="Contact Julia to save time and stress"
-            className="inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 text-base font-semibold text-white shadow-medium transition hover:bg-forest-light focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+            className={`inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 text-base font-semibold text-white shadow-medium transition hover:bg-forest-light ${focusVisibleRing}`}
           >
             See How Much Time &amp; Stress You Could Save → Contact Julia
           </Link>

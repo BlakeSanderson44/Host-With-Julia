@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { SVGProps } from "react";
 import { TESTIMONIALS } from "@/data/testimonials";
 
+import { focusVisibleRing } from "@/lib/a11y";
+
 type TestimonialsSectionProps = {
   className?: string;
 };
@@ -63,7 +65,7 @@ function ReviewBody({ text }: { text: string }) {
         <button
           type="button"
           onClick={() => setExpanded((open) => !open)}
-          className="rounded font-semibold text-forest underline-offset-2 transition hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
+          className={`rounded font-semibold text-forest underline-offset-2 transition hover:underline ${focusVisibleRing}`}
           aria-expanded={expanded}
         >
           {expanded ? "Show less" : "Read more"}
@@ -158,7 +160,7 @@ export default function TestimonialsSection({ className }: TestimonialsSectionPr
         <div className="mt-10 sm:mt-12">
           <a
             href="#contact"
-            className="inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 font-semibold text-white shadow-md transition hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
+            className={`inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 font-semibold text-white shadow-md transition hover:shadow-lg ${focusVisibleRing}`}
           >
             See How Much Time &amp; Stress You Could Save → Contact Julia
           </a>

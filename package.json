@@ -9,7 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
     "sanity": "node scripts/sanity-check.mjs",
-    "test": "tsc -p tsconfig.test.json && node dist-tests/tests/contactRoute.test.js && node dist-tests/tests/contactSection.test.js"
+    "test": "NODE_PATH=vendor tsc -p tsconfig.test.json && NODE_PATH=vendor node dist-tests/tests/contactRoute.test.js && NODE_PATH=vendor node dist-tests/tests/contactSection.test.js && NODE_PATH=vendor node dist-tests/tests/a11yControls.test.js"
   },
   "dependencies": {
     "next": "^14.0.4",
@@ -20,6 +20,7 @@
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
+    "@testing-library/react": "workspace:local",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",

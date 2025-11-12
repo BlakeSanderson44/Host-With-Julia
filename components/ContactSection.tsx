@@ -9,6 +9,8 @@ import {
   type SubmissionResult,
 } from "./contactClientUtils";
 
+import { focusVisibleRing, withFocusRing } from "@/lib/a11y";
+
 type PreferredMethod = "Email" | "Phone" | "Text";
 type PreferredTime = "Morning" | "Afternoon" | "Evening";
 type ListedWhere = "No" | "Yes – Airbnb" | "Yes – VRBO" | "Yes – Direct Site" | "Other";
@@ -263,12 +265,12 @@ export default function ContactSection() {
                   setForm((prev) => ({ ...prev, name: event.target.value }));
                 }}
                 required
-                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+                className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white")}
                 aria-invalid={Boolean(fieldError("name"))}
                 aria-describedby={fieldError("name") ? "contact-name-error" : undefined}
               />
               {fieldError("name") && (
-                <p id="contact-name-error" className="mt-1 text-sm text-red-600">
+                <p id="contact-name-error" className="mt-1 text-sm text-red-600" aria-live="polite">
                   {fieldError("name")}
                 </p>
               )}
@@ -287,12 +289,12 @@ export default function ContactSection() {
                   setForm((prev) => ({ ...prev, email: event.target.value }));
                 }}
                 required
-                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+                className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white")}
                 aria-invalid={Boolean(fieldError("email"))}
                 aria-describedby={fieldError("email") ? "contact-email-error" : undefined}
               />
               {fieldError("email") && (
-                <p id="contact-email-error" className="mt-1 text-sm text-red-600">
+                <p id="contact-email-error" className="mt-1 text-sm text-red-600" aria-live="polite">
                   {fieldError("email")}
                 </p>
               )}
@@ -310,7 +312,7 @@ export default function ContactSection() {
                   clearRemoteError("phone");
                   setForm((prev) => ({ ...prev, phone: event.target.value }));
                 }}
-                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+                className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white")}
               />
             </div>
           </div>
@@ -330,7 +332,7 @@ export default function ContactSection() {
                         clearRemoteError("preferredMethod");
                         setForm((prev) => ({ ...prev, preferredMethod: method }));
                       }}
-                      className="h-4 w-4 border-sand text-forest focus:ring-forest"
+                      className={`h-4 w-4 border-sand text-forest focus-visible:ring-emerald-600 focus-visible:ring-offset-1 focus-visible:ring-offset-white`}
                       required
                     />
                     <span className="text-sm text-charcoal">{method}</span>
@@ -358,7 +360,7 @@ export default function ContactSection() {
                     return { ...prev, preferredTime: value };
                   });
                 }}
-                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+                className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white")}
               >
                 <option value="">No preference</option>
                 <option value="Morning">Morning</option>
@@ -383,12 +385,16 @@ export default function ContactSection() {
               }}
               required
               placeholder={"123 Example St, Edmonds, WA 98020\n456 Lakeview Dr, Chelan, WA 98816"}
-              className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+              className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white")}
               aria-invalid={Boolean(fieldError("propertyAddresses"))}
               aria-describedby={fieldError("propertyAddresses") ? "property-addresses-error" : undefined}
             />
             {fieldError("propertyAddresses") && (
-              <p id="property-addresses-error" className="mt-1 text-sm text-red-600">
+              <p
+                id="property-addresses-error"
+                className="mt-1 text-sm text-red-600"
+                aria-live="polite"
+              >
                 {fieldError("propertyAddresses")}
               </p>
             )}
@@ -407,7 +413,7 @@ export default function ContactSection() {
                   clearRemoteError("currentlyListed");
                   setForm((prev) => ({ ...prev, currentlyListed: event.target.value as ListedWhere }));
                 }}
-                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+                className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white")}
               >
                 <option>No</option>
                 <option>Yes – Airbnb</option>
@@ -432,11 +438,13 @@ export default function ContactSection() {
                 disabled={form.currentlyListed === "No"}
                 aria-invalid={Boolean(fieldError("listedLinks"))}
                 aria-describedby={fieldError("listedLinks") ? "listed-links-error" : undefined}
-                className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest disabled:cursor-not-allowed disabled:bg-sand/40"
+                className={withFocusRing(
+                  "mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white disabled:cursor-not-allowed disabled:bg-sand/40",
+                )}
                 placeholder="https://airbnb.com/rooms/12345\nhttps://www.vrbo.com/98765"
               />
               {fieldError("listedLinks") && (
-                <p id="listed-links-error" className="mt-1 text-sm text-red-600">
+                <p id="listed-links-error" className="mt-1 text-sm text-red-600" aria-live="polite">
                   {fieldError("listedLinks")}
                 </p>
               )}
@@ -466,7 +474,7 @@ export default function ContactSection() {
                             : prev.services.filter((item) => item !== service),
                         }));
                       }}
-                      className="h-4 w-4 rounded border-sand text-forest focus:ring-forest"
+                      className="h-4 w-4 rounded border-sand text-forest focus-visible:ring-emerald-600 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
                     />
                     <span className="text-sm text-charcoal">{service}</span>
                   </label>
@@ -474,7 +482,7 @@ export default function ContactSection() {
               })}
             </div>
             {fieldError("services") && (
-              <p id="services-error" className="mt-1 text-sm text-red-600">
+              <p id="services-error" className="mt-1 text-sm text-red-600" aria-live="polite">
                 {fieldError("services")}
               </p>
             )}
@@ -500,7 +508,7 @@ export default function ContactSection() {
                   return { ...prev, desiredStartDate: value };
                 });
               }}
-              className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest sm:max-w-xs"
+              className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white sm:max-w-xs")}
             />
           </div>
 
@@ -519,13 +527,13 @@ export default function ContactSection() {
                 setForm((prev) => ({ ...prev, message: event.target.value }));
               }}
               required
-              className="mt-1 w-full rounded-xl border border-sand px-3 py-2 outline-none focus:ring-2 focus:ring-forest"
+              className={withFocusRing("mt-1 w-full rounded-xl border border-sand px-3 py-2 bg-white")}
               aria-invalid={Boolean(fieldError("message"))}
               aria-describedby={fieldError("message") ? "contact-message-error message-counter" : "message-counter"}
             />
             <div className="mt-1 flex items-center justify-between">
               {fieldError("message") ? (
-                <p id="contact-message-error" className="text-sm text-red-600">
+                <p id="contact-message-error" className="text-sm text-red-600" aria-live="polite">
                   {fieldError("message")}
                 </p>
               ) : (
@@ -549,7 +557,7 @@ export default function ContactSection() {
                   setForm((prev) => ({ ...prev, agree: event.target.checked }));
                 }}
                 required
-                className="mt-1 h-4 w-4 rounded border-sand text-forest focus:ring-forest"
+                className="mt-1 h-4 w-4 rounded border-sand text-forest focus-visible:ring-emerald-600 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
                 aria-invalid={Boolean(fieldError("agree"))}
                 aria-describedby={fieldError("agree") ? "contact-agree-error" : undefined}
               />
@@ -558,7 +566,7 @@ export default function ContactSection() {
               </label>
             </div>
             {fieldError("agree") && (
-              <p id="contact-agree-error" className="text-sm text-red-600">
+              <p id="contact-agree-error" className="text-sm text-red-600" aria-live="polite">
                 {fieldError("agree")}
               </p>
             )}
@@ -579,6 +587,7 @@ export default function ContactSection() {
           {remoteErrors.form && (
             <div
               role="alert"
+              aria-live="polite"
               className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
               {remoteErrors.form}
@@ -589,11 +598,14 @@ export default function ContactSection() {
             <button
               type="submit"
               disabled={submitting || !canSubmit}
-              className="inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 text-white font-semibold shadow-md transition hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+              className={`inline-flex items-center justify-center rounded-full bg-forest px-6 py-3 text-white font-semibold shadow-md transition hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 ${focusVisibleRing}`}
             >
               {submitting ? "Sending…" : "Request a Consultation"}
             </button>
-            <a href="#testimonials" className="text-forest underline-offset-2 hover:underline">
+            <a
+              href="#testimonials"
+              className={`text-forest underline-offset-2 hover:underline rounded-md ${focusVisibleRing}`}
+            >
               Read guest reviews
             </a>
           </div>
