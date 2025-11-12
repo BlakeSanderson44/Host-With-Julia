@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { requireAlt } from '@/lib/image';
 import Button from './Button';
+import Reveal from './Reveal';
 
 const HERO_IMAGE_SRC = process.env['NEXT_PUBLIC_HERO_IMAGE'] ?? '/images/echo-house.avif';
 const HERO_HEADING_ID = 'hero-heading';
@@ -91,17 +92,18 @@ export default function HeroSection() {
               title: 'Performance clarity',
               description: 'Transparent pricing, monthly reports, and payouts you can plan around.',
             },
-          ].map((item) => (
-            <div
+          ].map((item, index) => (
+            <Reveal
               key={item.title}
               className="rounded-2xl border border-white/15 bg-white/10 p-6 shadow-soft backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1 hover:bg-white/15"
+              delay={`${index * 120}ms`}
             >
               <div className="mb-3 text-2xl" aria-hidden="true">
                 {item.icon}
               </div>
               <p className="mb-2 text-base font-semibold text-white">{item.title}</p>
               <p className="text-sm text-white/80">{item.description}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

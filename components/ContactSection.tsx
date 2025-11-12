@@ -8,6 +8,7 @@ import {
   type RemoteErrors as RemoteErrorMap,
   type SubmissionResult,
 } from "./contactClientUtils";
+import Reveal from "./Reveal";
 
 type PreferredMethod = "Email" | "Phone" | "Text";
 type PreferredTime = "Morning" | "Afternoon" | "Evening";
@@ -244,10 +245,12 @@ export default function ContactSection() {
           <p className="mt-3 text-slate-600">Tell us a bit about your place and goals. ~2 minutes to complete.</p>
         </header>
 
-        <form
+        <Reveal
+          as="form"
           onSubmit={handleSubmit}
           className="grid gap-6 rounded-2xl border border-sand bg-white p-6 sm:p-8 shadow"
           noValidate
+          delay="0ms"
         >
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
@@ -597,7 +600,7 @@ export default function ContactSection() {
               Read guest reviews
             </a>
           </div>
-        </form>
+        </Reveal>
       </div>
     </section>
   );

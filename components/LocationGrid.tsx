@@ -3,6 +3,7 @@
 import Link from 'next/link';
 
 import { LOCATIONS } from '@/data/locations';
+import Reveal from './Reveal';
 
 export default function LocationGrid() {
   return (
@@ -22,10 +23,12 @@ export default function LocationGrid() {
       </header>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {LOCATIONS.map((loc) => (
-          <article
+        {LOCATIONS.map((loc, index) => (
+          <Reveal
+            as="article"
             key={loc.slug}
             className="group overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 transition hover:shadow-lg"
+            delay={`${index * 120}ms`}
           >
             <div className="relative aspect-[4/3] overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -49,7 +52,7 @@ export default function LocationGrid() {
               </div>
               {loc.blurb && <p className="mt-2 text-sm text-slate-600">{loc.blurb}</p>}
             </div>
-          </article>
+          </Reveal>
         ))}
       </div>
     </section>
