@@ -229,11 +229,12 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all rounded-full px-2 ${focusVisibleRing}`}
-                        aria-label={`View ${property.name} on Airbnb (opens in a new tab)`}
                       >
-                        <span aria-hidden="true">View on Airbnb</span>
-                        <span className="sr-only"> for {property.name}</span>
-                        <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                        <span>View on Airbnb</span>
+                        <span className="sr-only"> listing for {property.name}</span>
+                        <span className="group-hover:translate-x-1 transition-transform" aria-hidden="true">
+                          ↗
+                        </span>
                       </a>
                     </div>
                   </div>
