@@ -125,6 +125,7 @@ export default function Header({ navItems }: HeaderProps) {
 
   return (
     <header
+      id="top"
       aria-label="Site header"
       className="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur border-b border-sand"
     >
