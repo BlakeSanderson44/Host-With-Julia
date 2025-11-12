@@ -8,6 +8,8 @@ import ServicesSection from '@/components/ServicesSection';
 import SiteFooter from '@/components/SiteFooter';
 import StickyCTA from '@/components/StickyCTA';
 
+import FAQ, { type FAQItem } from '@/app/components/FAQ';
+
 import type { AboutSectionProps } from '@/components/AboutSection';
 import type { PropertyItem } from '@/components/PropertiesSection';
 
@@ -101,6 +103,7 @@ const navItems: NavItem[] = [
   { href: '#properties', label: 'Properties' },
   { href: '#about', label: 'Why Me' },
   { href: '#testimonials', label: 'Testimonials' },
+  { href: '#faq', label: 'FAQ' },
   { href: '#contact', label: 'Contact' },
 ];
 
@@ -218,6 +221,37 @@ const properties: PropertyItem[] = [
   },
 ];
 
+const faqItems: FAQItem[] = [
+  {
+    q: 'How does your pricing model work for full-service hosting?',
+    a: 'We tailor management fees to your property mix and revenue goals, aligning incentives around performance and occupancy.',
+  },
+  {
+    q: 'Do you require long-term contracts or can I start month-to-month?',
+    a: 'Most owners start with a flexible month-to-month agreement, and we revisit terms together once you are confident in the partnership.',
+  },
+  {
+    q: 'Who handles cleaners and linens for turnovers?',
+    a: 'We coordinate directly with your preferred cleaning partners or match you with vetted vendors, keeping linens and checklists organized.',
+  },
+  {
+    q: 'How often will I receive performance reports?',
+    a: 'Expect a clear monthly recap covering revenue, occupancy, guest feedback, and actionable opportunities for the upcoming month.',
+  },
+  {
+    q: 'Is dynamic pricing included in your service?',
+    a: 'Yes, we manage dynamic pricing tools like PriceLabs to keep nightly rates competitive and responsive to demand.',
+  },
+  {
+    q: 'Can you support owner-occupied or part-time rentals?',
+    a: 'Absolutely. We design bespoke calendars, stocking plans, and guest communications tailored to shared or owner-occupied homes.',
+  },
+  {
+    q: 'How do you help keep my property compliant with local regulations?',
+    a: 'We monitor municipal requirements, guide you through permitting, and document key procedures to keep operations compliant.',
+  },
+];
+
 export default function Home() {
   return (
     <>
@@ -232,6 +266,17 @@ export default function Home() {
         <div className="mb-24 md:mb-0">
           <TestimonialsSection />
         </div>
+        <section id="faq" className="scroll-mt-28 bg-sand py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="mb-10 space-y-4 text-center lg:text-left">
+              <h2 className="text-3xl font-semibold tracking-tight text-forest sm:text-4xl">Frequently Asked Questions</h2>
+              <p className="text-lg text-slate/80">
+                Answers to the topics owners ask about most—from onboarding logistics to long-term strategy.
+              </p>
+            </div>
+            <FAQ items={faqItems} />
+          </div>
+        </section>
         <ContactSection />
         <StickyCTA />
       </main>
