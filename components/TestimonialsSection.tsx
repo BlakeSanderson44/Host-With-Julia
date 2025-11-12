@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { SVGProps } from "react";
 import { TESTIMONIALS } from "@/data/testimonials";
 
+import Reveal from "./Reveal";
+
 type TestimonialsSectionProps = {
   className?: string;
 };
@@ -86,10 +88,12 @@ export default function TestimonialsSection({ className }: TestimonialsSectionPr
 
         <div className="-mx-6 overflow-x-auto px-6 sm:hidden">
           <div className="flex snap-x snap-mandatory gap-4">
-            {TESTIMONIALS.map((testimonial) => (
-              <article
+            {TESTIMONIALS.map((testimonial, index) => (
+              <Reveal
+                as="article"
                 key={testimonial.id}
                 className="min-w-[85%] snap-start rounded-2xl border border-sand bg-white p-5 shadow-soft"
+                delay={`${index * 120}ms`}
               >
                 <header className="flex items-start justify-between gap-3">
                   <Stars value={testimonial.rating ?? 5} />
@@ -117,14 +121,19 @@ export default function TestimonialsSection({ className }: TestimonialsSectionPr
                     {testimonial.source}
                   </cite>
                 )}
-              </article>
+              </Reveal>
             ))}
           </div>
         </div>
 
         <div className="hidden grid-cols-2 gap-6 sm:grid lg:grid-cols-3">
-          {TESTIMONIALS.map((testimonial) => (
-            <article key={testimonial.id} className="rounded-2xl border border-sand bg-white p-6 shadow-soft">
+          {TESTIMONIALS.map((testimonial, index) => (
+            <Reveal
+              as="article"
+              key={testimonial.id}
+              className="rounded-2xl border border-sand bg-white p-6 shadow-soft"
+              delay={`${index * 120}ms`}
+            >
               <header className="flex items-start justify-between gap-3">
                 <Stars value={testimonial.rating ?? 5} />
                 {testimonial.date && (
@@ -151,7 +160,7 @@ export default function TestimonialsSection({ className }: TestimonialsSectionPr
                   {testimonial.source}
                 </cite>
               )}
-            </article>
+            </Reveal>
           ))}
         </div>
 

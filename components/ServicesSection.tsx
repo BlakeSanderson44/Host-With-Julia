@@ -1,5 +1,7 @@
 import type { SVGProps } from 'react';
 
+import Reveal from './Reveal';
+
 type ServicesSectionProps = {
   className?: string;
 };
@@ -50,7 +52,11 @@ export default function ServicesSection({ className }: ServicesSectionProps) {
         </header>
 
         <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-          <article className="rounded-2xl border border-sand bg-white p-6 shadow sm:p-7">
+          <Reveal
+            as="article"
+            className="rounded-2xl border border-sand bg-white p-6 shadow sm:p-7"
+            delay="0ms"
+          >
             <h3 className="text-xl font-semibold text-charcoal">Boutique Full-Service Hosting</h3>
             <p className="mt-2 text-slate">
               Our standard package—comprehensive, hands-on management designed to deliver warm hospitality and steady
@@ -95,9 +101,13 @@ export default function ServicesSection({ className }: ServicesSectionProps) {
                 </div>
               </li>
             </ul>
-          </article>
+          </Reveal>
 
-          <article className="rounded-2xl border border-sand bg-white p-6 shadow sm:p-7">
+          <Reveal
+            as="article"
+            className="rounded-2xl border border-sand bg-white p-6 shadow sm:p-7"
+            delay="120ms"
+          >
             <h3 className="text-xl font-semibold text-charcoal">Add-ons: Elevate Your Listing</h3>
             <p className="mt-2 text-slate">À-la-carte upgrades to tailor the experience to your goals.</p>
             <ul className="mt-5 space-y-3">
@@ -125,7 +135,7 @@ export default function ServicesSection({ className }: ServicesSectionProps) {
                 </div>
               </li>
             </ul>
-          </article>
+          </Reveal>
         </div>
 
         <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">

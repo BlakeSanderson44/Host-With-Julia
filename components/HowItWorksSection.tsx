@@ -1,3 +1,5 @@
+import Reveal from './Reveal';
+
 const headingId = 'how-it-works-heading';
 
 const asString = (value: unknown, fallback = ''): string =>
@@ -75,9 +77,11 @@ export default function HowItWorksSection({
 
         <ol className="grid list-none gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {normalized.map(({ title, description }, index) => (
-            <li
+            <Reveal
+              as="li"
               key={`${index}-${title}`}
               className="rounded-2xl border border-sand bg-cream/50 p-6 shadow-sm transition-colors hover:border-forest"
+              delay={`${index * 120}ms`}
             >
               <div className="flex items-start gap-4">
                 <StepBadge number={index + 1} />
@@ -89,7 +93,7 @@ export default function HowItWorksSection({
                   )}
                 </div>
               </div>
-            </li>
+            </Reveal>
           ))}
         </ol>
       </div>
