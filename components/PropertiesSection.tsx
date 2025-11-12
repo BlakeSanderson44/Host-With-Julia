@@ -241,6 +241,7 @@ export default function PropertiesSection({ properties }: PropertiesSectionProps
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`text-lake hover:text-lake-dark font-semibold text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all rounded-full px-2 ${focusVisibleRing}`}
+                        tabIndex={activeIndex === idx ? 0 : -1}
                       >
                         <span>View on Airbnb</span>
                         <span className="sr-only"> listing for {property.name}</span>
