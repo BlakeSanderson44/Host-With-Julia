@@ -10,9 +10,14 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": false,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ]
   },
   "include": [
+    "next-env.d.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "__tests__/**/*.ts",
